@@ -3,7 +3,7 @@ package com.xxxtai.view;
 import com.xxxtai.main.Main;
 import com.xxxtai.model.AGVCar;
 import com.xxxtai.model.Graph;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xxxtai.myToolKit.Common;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +20,14 @@ import java.util.ArrayList;
 @Component
 public class SchedulingGui extends JPanel{
 	private static final long serialVersionUID = 1L;
-	private RoundButton schedulingGuiBtn;
-	private RoundButton setingGuiBtn;
+
+	private RoundButton settingGuiBtn;
+
 	private RoundButton drawingGuiBtn;
+
 	@Resource
 	private Graph graph;
+
 	@Resource
 	private DrawingGraph drawingGraph;
 	
@@ -35,13 +38,13 @@ public class SchedulingGui extends JPanel{
 	private SchedulingGui(){
 		System.out.println("SchedulingGui");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		schedulingGuiBtn = new RoundButton("调度界面");
+		RoundButton schedulingGuiBtn = new RoundButton("调度界面");
 		schedulingGuiBtn.setBounds(0, 0, screenSize.width/3, screenSize.height/20);
 		schedulingGuiBtn.setForeground(new Color(30, 144, 255));
 		schedulingGuiBtn.setBackground(Color.WHITE);
 		
-		setingGuiBtn = new RoundButton("设置界面");
-		setingGuiBtn.setBounds(screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
+		settingGuiBtn = new RoundButton("设置界面");
+		settingGuiBtn.setBounds(screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
 
 		drawingGuiBtn = new RoundButton("制图界面");
 		drawingGuiBtn.setBounds(2*screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
@@ -52,7 +55,7 @@ public class SchedulingGui extends JPanel{
 
 		this.setLayout(null);
 		this.add(schedulingGuiBtn);
-		this.add(setingGuiBtn);
+		this.add(settingGuiBtn);
 		this.add(drawingGuiBtn);
 		this.add(stateLabel);
 		
@@ -69,7 +72,7 @@ public class SchedulingGui extends JPanel{
 				}
 			}
 		});
-		AGVArray = new ArrayList<AGVCar>();
+		AGVArray = new ArrayList<>();
 		timer = new Timer(50, new RepaintTimerListener());
 	}
 	
@@ -99,31 +102,8 @@ public class SchedulingGui extends JPanel{
 		}
 	}
 	
-	
-	public void getGuiInstance(Main main, SchedulingGui schedulingGui, SetingGui setingGui, DrawingGui drawingGui){
-		schedulingGuiBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				main.getContentPane().removeAll();
-				main.getContentPane().add(schedulingGui);
-				main.repaint();
-				main.validate();
-			}
-		});
-		setingGuiBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				main.getContentPane().removeAll();
-				main.getContentPane().add(setingGui);
-				main.repaint();
-				main.validate();
-			}
-		});
-		drawingGuiBtn.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				main.getContentPane().removeAll();
-				main.getContentPane().add(drawingGui);
-				main.repaint();
-				main.validate();
-			}
-		});		
+	public void getGuiInstance(Main main, SettingGui settingGui, DrawingGui drawingGui){
+		settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
+		drawingGuiBtn.addActionListener(e -> Common.changePanel(main, drawingGui));
 	}
 }

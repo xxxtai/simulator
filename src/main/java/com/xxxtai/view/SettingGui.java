@@ -8,23 +8,23 @@ import javax.swing.*;
 import java.awt.*;
 
 @Component
-public class DrawingGui extends JPanel{
+public class SettingGui extends JPanel{
 	
 	private RoundButton schedulingGuiBtn;
-	private RoundButton settingGuiBtn;
+	private RoundButton drawingGuiBtn;
 
-	public DrawingGui(){
+	public SettingGui(){
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		schedulingGuiBtn = new RoundButton("调度界面");
 		schedulingGuiBtn.setBounds(0, 0, screenSize.width/3, screenSize.height/20);
-		
-		settingGuiBtn = new RoundButton("设置界面");
-		settingGuiBtn.setBounds(screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
 
-		RoundButton drawingGuiBtn = new RoundButton("制图界面");
+		RoundButton settingGuiBtn = new RoundButton("设置界面");
+		settingGuiBtn.setBounds(screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
+		settingGuiBtn.setForeground(new Color(30, 144, 255));
+		settingGuiBtn.setBackground(Color.WHITE);
+		
+		drawingGuiBtn = new RoundButton("制图界面");
 		drawingGuiBtn.setBounds(2*screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
-		drawingGuiBtn.setForeground(new Color(30, 144, 255));
-		drawingGuiBtn.setBackground(Color.WHITE);
 
 		JLabel stateLabel = new JLabel();
 		stateLabel.setBounds(0, 22*screenSize.height/25, screenSize.width, screenSize.height/25);
@@ -39,13 +39,11 @@ public class DrawingGui extends JPanel{
 
 
 	
-	
 	}
 	
-	
-	public void getGuiInstance(Main main, SchedulingGui schedulingGui, SettingGui settingGui){
-		schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, schedulingGui));
-		settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
+	public void getGuiInstance(Main main, SettingGui settingGui, DrawingGui drawingGui){
+		schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
+		drawingGuiBtn.addActionListener(e -> Common.changePanel(main, drawingGui));
 	}
 
 }

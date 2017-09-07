@@ -1,14 +1,10 @@
 package com.xxxtai.main;
 
-import com.xxxtai.model.Graph;
 import com.xxxtai.view.DrawingGui;
 import com.xxxtai.view.SchedulingGui;
-import com.xxxtai.view.SetingGui;
+import com.xxxtai.view.SettingGui;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -26,19 +22,13 @@ public class Main extends JFrame{
 	@Resource
 	private SchedulingGui schedulingGui;
 	@Resource
-	private SetingGui setingGui;
+	private SettingGui settingGui;
 	@Resource
 	private DrawingGui graphingGui;
-	@Resource
-	private Graph graph;
 
 	public Main(){
 		super("模拟多AGV场景");
-		
-		
-		
-		
-		
+
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setExtendedState(Frame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,13 +41,12 @@ public class Main extends JFrame{
 	          }
 	    });
 	}
-	public void init(ApplicationContext context){
-		graphingGui.getGuiInstance(Main.this, schedulingGui, setingGui, graphingGui);
-		setingGui.getGuiInstance(Main.this, schedulingGui, setingGui, graphingGui);
-		schedulingGui.getGuiInstance(Main.this, schedulingGui, setingGui, graphingGui);
+	private void init(ApplicationContext context){
+		graphingGui.getGuiInstance(Main.this, schedulingGui, settingGui);
+		settingGui.getGuiInstance(Main.this, settingGui, graphingGui);
+		schedulingGui.getGuiInstance(Main.this, settingGui, graphingGui);
 		schedulingGui.init(context);
-		
-		
+
 		this.getContentPane().add(schedulingGui);
 		this.repaint();
 		this.validate();

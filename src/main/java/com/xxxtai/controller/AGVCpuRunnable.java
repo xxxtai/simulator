@@ -1,7 +1,6 @@
 package com.xxxtai.controller;
 
 import com.xxxtai.model.AGVCar;
-import com.xxxtai.model.Graph;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,8 +13,7 @@ import java.net.SocketException;
 public class AGVCpuRunnable implements Runnable {
 	@Resource
 	private CommunicationModule communicationModule;
-	@Resource
-	Graph graph;
+
 	private AGVCar carModel;
 	
 	public AGVCpuRunnable(){}

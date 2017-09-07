@@ -3,6 +3,7 @@ package com.xxxtai.view;
 import com.xxxtai.model.AGVCar;
 import com.xxxtai.model.Edge;
 import com.xxxtai.model.Graph;
+import com.xxxtai.myToolKit.Orientation;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class DrawingGraph {
 
 	}
 	
-	public void drawingMap(Graphics g, Graph graph){
+	void drawingMap(Graphics g, Graph graph){
 		((Graphics2D)g).setStroke(new BasicStroke(6.0f));	
 		g.setFont(new Font("宋体", Font.BOLD, 20));
 		
@@ -56,21 +57,21 @@ public class DrawingGraph {
 	}
 	
 	
-	public void drawingCar(Graphics g, Graph graph, ArrayList<AGVCar> AGVArray, JPanel panel){
+	void drawingCar(Graphics g, Graph graph, ArrayList<AGVCar> AGVArray, JPanel panel){
 		g.setColor(Color.black);
 		g.setFont(new Font("Dialog", Font.BOLD, 25));
 		for(int i = 0; i < AGVArray.size(); i++){			
 			g.setColor(Color.black);
-			if(AGVArray.get(i).getOrientation() == AGVCar.Orientation.LEFT){
+			if(AGVArray.get(i).getOrientation() == Orientation.LEFT){
 				g.drawImage(leftImageG,AGVArray.get(i).getX() - 20, AGVArray.get(i).getY() - 17, 40, 34, panel);
 				g.drawString(String.valueOf(i+1), AGVArray.get(i).getX(), AGVArray.get(i).getY()+9);
-			}else if(AGVArray.get(i).getOrientation() == AGVCar.Orientation.RIGTH){
+			}else if(AGVArray.get(i).getOrientation() == Orientation.RIGHT){
 				g.drawImage(rightImageG,AGVArray.get(i).getX() - 20, AGVArray.get(i).getY() - 17, 40, 34, panel);
 				g.drawString(String.valueOf(i+1), AGVArray.get(i).getX()-10, AGVArray.get(i).getY()+9);
-			}else if(AGVArray.get(i).getOrientation() == AGVCar.Orientation.UP){
+			}else if(AGVArray.get(i).getOrientation() == Orientation.UP){
 				g.drawImage(upImageG,AGVArray.get(i).getX() - 17, AGVArray.get(i).getY() - 20, 34, 40, panel);
 				g.drawString(String.valueOf(i+1), AGVArray.get(i).getX()-10, AGVArray.get(i).getY()+10);
-			}else if(AGVArray.get(i).getOrientation() == AGVCar.Orientation.DOWN){
+			}else if(AGVArray.get(i).getOrientation() == Orientation.DOWN){
 				g.drawImage(downImageG,AGVArray.get(i).getX() - 17, AGVArray.get(i).getY() - 20, 34, 40, panel);
 				g.drawString(String.valueOf(i+1), AGVArray.get(i).getX()-5, AGVArray.get(i).getY()+5);
 			}	

@@ -24,7 +24,7 @@ public class CommunicationModule{
 	public CommunicationModule(){
 		System.out.println("communicationModule");
 	}
-	public boolean connect(){
+	boolean connect(){
 		boolean isSuccess = false;
 		try{
 			System.out.println("ready to connect");
@@ -39,20 +39,18 @@ public class CommunicationModule{
 		return isSuccess;
 	}
 	
-	public String read(){
+	String read(){
 		boolean readSuccess = false;
 		boolean foundStart = false;
-		StringBuffer message = new StringBuffer();
+		StringBuilder message = new StringBuilder();
 		try {
-			if(inputStream.available() > 0){				
-				if(!foundStart){
-					byte[] endCode = new byte[1];
-					inputStream.read(endCode);
-					message.append(ReaderWriter.bytes2HexString(endCode));
+			if(inputStream.available() > 0){
+				byte[] endCode = new byte[1];
+				inputStream.read(endCode);
+				message.append(ReaderWriter.bytes2HexString(endCode));
 //					System.out.println("found start:"+message);
-					if(message.toString().equals("CC") || message.toString().equals("AA")){
-						foundStart = true;
-					}
+				if(message.toString().equals("CC") || message.toString().equals("AA")){
+					foundStart = true;
 				}
 				if(foundStart){
 					while(true){
@@ -91,7 +89,7 @@ public class CommunicationModule{
 		}
 	}
 	
-	public boolean write (String sendMessage)throws SocketException{
+	boolean write(String sendMessage)throws SocketException{
 		//System.out.println("ready to send to system :"+ sendMessage);
 		boolean isSuccess = false;
 		try {
@@ -108,7 +106,7 @@ public class CommunicationModule{
 		return isSuccess;
 	}
 	
-	public void releaseSource(){
+	void releaseSource(){
 		try {
 			this.inputStream.close();
 			this.outputStream.close();

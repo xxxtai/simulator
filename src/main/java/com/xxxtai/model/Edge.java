@@ -5,11 +5,11 @@ import java.awt.*;
 public class Edge {
 	public final Node START_NODE;
 	public final Node END_NODE;
-	public final int REAL_DISTANCE;
-	public final int CARD_NUM;
-	public final Point CARD_POSITION;
+	final int REAL_DISTANCE;
+	final int CARD_NUM;
+	final Point CARD_POSITION;
 	
-	public Edge(Node str, Node end, int dis, int CardNum){
+	Edge(Node str, Node end, int dis, int CardNum){
 		START_NODE = str;
 		END_NODE = end;
 		REAL_DISTANCE = dis;

@@ -10,14 +10,10 @@ public class RoundButton extends JButton {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public RoundButton(String label) {
+	RoundButton(String label) {
         super(label);
-        Dimension size = getPreferredSize();//Dimension 类封装单个对象中组件的宽度和高度（精确到整数
-//        size.width = size.height = Math.max(size.width, size.height);
+        Dimension size = getPreferredSize();
         setPreferredSize(size);
-
-        // This call causes the JButton not to paint the background.
-        // This allows us to paint a round background.
         setContentAreaFilled(false);
         this.setBackground(new Color(30, 144, 255));
         this.setFocusPainted(false);
@@ -47,7 +43,7 @@ public class RoundButton extends JButton {
     }
 
     // Hit detection.
-    Shape shape;
+    private Shape shape;
     public boolean contains(int x, int y) {
         // If the button has changed size, make a new shape object.
         if (shape == null || !shape.getBounds().equals(getBounds())) {
