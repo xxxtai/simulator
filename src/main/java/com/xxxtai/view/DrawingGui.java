@@ -8,44 +8,42 @@ import javax.swing.*;
 import java.awt.*;
 
 @Component
-public class DrawingGui extends JPanel{
-	
-	private RoundButton schedulingGuiBtn;
-	private RoundButton settingGuiBtn;
+public class DrawingGui extends JPanel {
 
-	public DrawingGui(){
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		schedulingGuiBtn = new RoundButton("调度界面");
-		schedulingGuiBtn.setBounds(0, 0, screenSize.width/3, screenSize.height/20);
-		
-		settingGuiBtn = new RoundButton("设置界面");
-		settingGuiBtn.setBounds(screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
+    private RoundButton schedulingGuiBtn;
+    private RoundButton settingGuiBtn;
 
-		RoundButton drawingGuiBtn = new RoundButton("制图界面");
-		drawingGuiBtn.setBounds(2*screenSize.width/3, 0, screenSize.width/3, screenSize.height/20);
-		drawingGuiBtn.setForeground(new Color(30, 144, 255));
-		drawingGuiBtn.setBackground(Color.WHITE);
+    public DrawingGui() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        schedulingGuiBtn = new RoundButton("调度界面");
+        schedulingGuiBtn.setBounds(0, 0, screenSize.width / 3, screenSize.height / 20);
 
-		JLabel stateLabel = new JLabel();
-		stateLabel.setBounds(0, 22*screenSize.height/25, screenSize.width, screenSize.height/25);
-		stateLabel.setFont(new Font("宋体", Font.BOLD, 25));
+        settingGuiBtn = new RoundButton("设置界面");
+        settingGuiBtn.setBounds(screenSize.width / 3, 0, screenSize.width / 3, screenSize.height / 20);
 
+        RoundButton drawingGuiBtn = new RoundButton("制图界面");
+        drawingGuiBtn.setBounds(2 * screenSize.width / 3, 0, screenSize.width / 3, screenSize.height / 20);
+        drawingGuiBtn.setForeground(new Color(30, 144, 255));
+        drawingGuiBtn.setBackground(Color.WHITE);
 
-		this.setLayout(null);
-		this.add(schedulingGuiBtn);
-		this.add(settingGuiBtn);
-		this.add(drawingGuiBtn);
-		this.add(stateLabel);
+        JLabel stateLabel = new JLabel();
+        stateLabel.setBounds(0, 22 * screenSize.height / 25, screenSize.width, screenSize.height / 25);
+        stateLabel.setFont(new Font("宋体", Font.BOLD, 25));
 
 
-	
-	
-	}
-	
-	
-	public void getGuiInstance(Main main, SchedulingGui schedulingGui, SettingGui settingGui){
-		schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, schedulingGui));
-		settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
-	}
+        this.setLayout(null);
+        this.add(schedulingGuiBtn);
+        this.add(settingGuiBtn);
+        this.add(drawingGuiBtn);
+        this.add(stateLabel);
+
+
+    }
+
+
+    public void getGuiInstance(Main main, SchedulingGui schedulingGui, SettingGui settingGui) {
+        schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, schedulingGui));
+        settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
+    }
 
 }
