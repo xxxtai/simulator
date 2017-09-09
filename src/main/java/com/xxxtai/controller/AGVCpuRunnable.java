@@ -1,6 +1,8 @@
 package com.xxxtai.controller;
 
 import com.xxxtai.model.AGVCar;
+import com.xxxtai.myToolKit.Constant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,7 @@ import javax.annotation.Resource;
 import java.net.SocketException;
 
 @Component
+@Slf4j(topic = "develop")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AGVCpuRunnable implements Runnable {
     @Resource
@@ -16,49 +19,41 @@ public class AGVCpuRunnable implements Runnable {
 
     private AGVCar carModel;
 
-    public AGVCpuRunnable() {
-    }
+    public AGVCpuRunnable() {}
 
     @Override
     public void run() {
         while (true) {
             if (System.currentTimeMillis() - this.carModel.getLastCommunicationTime() > 4500) {
                 this.communicationModule.releaseSource();
-                System.out.println("break//////////" + System.currentTimeMillis());
+                log.info("break//////////" + System.currentTimeMillis());
                 this.carModel.setNewCpuRunnable();
                 break;
             }
 
-            String recMessage = null;
+            String recMessage;
             if ((recMessage = this.communicationModule.read()) != null) {
                 this.carModel.setLastCommunicationTime(System.currentTimeMillis());
-//				System.out.println("AGV receive message:"+recMessage);
-                if (recMessage.endsWith("BB")) {
-                    this.carModel.setCardCommandMap(recMessage.substring(2, recMessage.length() - 2));
+				log.info("AGV receive message:"+recMessage);
+                if (recMessage.endsWith(Constant.ROUTE_SUFFIX)) {
+                    this.carModel.setCardCommandMap(recMessage.substring(1, recMessage.length() - 1));
                 }
-                if (recMessage.startsWith("CC") && recMessage.endsWith("DD")) {
-                    if (Integer.valueOf(recMessage.substring(2, 4), 16) == 1) {
+                if (recMessage.startsWith(Constant.PREFIX) && recMessage.endsWith(Constant.COMMAND_SUFFIX)) {
+                    String content = recMessage.substring(1, recMessage.length() - 1);
+                    String[] c = content.split(Constant.SPLIT);
+                    if (Integer.valueOf(c[0], 16) == 1) {
                         this.carModel.startTheAGV();
-                    } else if (Integer.valueOf(recMessage.substring(2, 4), 16) == 2) {
+                    } else if (Integer.valueOf(c[0], 16) == 2) {
                         this.carModel.stopTheAGV();
                     }
                 }
             }
-//			try {
-//				this.communicationModule.write("AA222222BB");
-//			} catch (SocketException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//				this.communicationModule.releaseSource();
-//				break;
-//			}
+
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -70,27 +65,16 @@ public class AGVCpuRunnable implements Runnable {
         return this.communicationModule.connect();
     }
 
-    public boolean sendReadCardToSystem(int AGVNum, int cardNum, int state) {
-        boolean isSuccess = false;
-        String sendMessage = "AA";
-        if (AGVNum < 16)
-            sendMessage = sendMessage + "0" + Integer.toHexString(AGVNum);
-        else
-            sendMessage += Integer.toHexString(AGVNum);
+    public void sendReadCardToSystem(int AGVNum, int cardNum) {
+        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(cardNum) + Constant.CARD_SUFFIX);
+    }
 
-        if (cardNum < 16)
-            sendMessage = sendMessage + "0" + Integer.toHexString(cardNum);
-        else
-            sendMessage = sendMessage + Integer.toHexString(cardNum);
+    public void sendStateToSystem(int AGVNum, int state){
+        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(state) + Constant.STATE_SUFFIX);
+    }
 
-        sendMessage = sendMessage + "0" + state + "BB";
-
-        try {
-            isSuccess = this.communicationModule.write(sendMessage);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return isSuccess;
+    public void heartBeat(int AGVNum){
+        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + Constant.HEART_SUFFIX);
     }
 
 }

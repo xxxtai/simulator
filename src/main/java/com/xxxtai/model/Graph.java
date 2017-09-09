@@ -3,6 +3,7 @@ package com.xxxtai.model;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 @Component
+@Slf4j(topic = "develop")
 public class Graph {
     private ArrayList<Node> nodeArray;
     private ArrayList<Edge> edgeArray;
@@ -24,7 +26,7 @@ public class Graph {
     private void importNewGraph() {
         File file = new File("C:\\Users\\xxxta\\work\\Graph.xls");
         try {
-            System.out.println(file.getPath());
+            log.info(file.getPath());
             InputStream is = new FileInputStream(file.getPath());//this.getClass().getResourceAsStream("/testGraph.xls");
             Workbook wb = Workbook.getWorkbook(is);
 

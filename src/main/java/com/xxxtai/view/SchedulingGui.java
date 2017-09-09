@@ -36,7 +36,6 @@ public class SchedulingGui extends JPanel {
     private Timer timer;
 
     private SchedulingGui() {
-        System.out.println("SchedulingGui");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         RoundButton schedulingGuiBtn = new RoundButton("调度界面");
         schedulingGuiBtn.setBounds(0, 0, screenSize.width / 3, screenSize.height / 20);

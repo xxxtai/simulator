@@ -17,12 +17,8 @@ import java.util.concurrent.Executors;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@Slf4j
+@Slf4j(topic = "develop")
 public class AGVCar {
-    @Resource
-    private AGVCpuRunnable cpuRunnable;
-    @Resource
-    private Graph graph;
     private int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
     private ExecutorService executor;
@@ -35,9 +31,12 @@ public class AGVCar {
     private int lastDetectCardNum;
     private Map<Integer, Integer> cardCommandMap;
     private int stopCardNum;
-    private boolean firstInit = true;
     private long lastCommunicationTime;
     private long count_3s;
+    @Resource
+    private AGVCpuRunnable cpuRunnable;
+    @Resource
+    private Graph graph;
 
     public AGVCar() {
         this.executor = Executors.newSingleThreadExecutor();
@@ -52,7 +51,7 @@ public class AGVCar {
         this.cpuRunnable.setCarModelToCpu(this);
         if (this.cpuRunnable.connect()) {
             this.executor.execute(this.cpuRunnable);
-            this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 2);
+            this.cpuRunnable.heartBeat(AGVNum);
         }
         if (AGVNum == 1)
             setAtEdge(graph.getEdge(0));
@@ -114,10 +113,9 @@ public class AGVCar {
             log.info(this.AGVNum + "AGV detectRFIDCard:" + cardNum);
             if (cardNum == this.stopCardNum) {
                 this.state = State.STOP;
-                this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum, 2);//1、运行2、停止
-            } else {
-                this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum, 1);
+                this.cpuRunnable.sendStateToSystem(this.AGVNum, 2);
             }
+            this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum);
         }
 
         if (this.finishEdge && this.isFirstInquire && this.cardCommandMap.get(this.lastDetectCardNum) != null) {
@@ -132,7 +130,7 @@ public class AGVCar {
     public void heartBeat() {
         if (this.count_3s == 60) {
             this.count_3s = 0;
-            this.cpuRunnable.sendReadCardToSystem(this.AGVNum, 0, 0);
+            this.cpuRunnable.heartBeat(this.AGVNum);
         } else {
             this.count_3s++;
         }
@@ -237,41 +235,35 @@ public class AGVCar {
         return foundCard;
     }
 
-    public void setCardCommandMap(String str) {
-        this.stopCardNum = Integer.parseInt(str.substring(str.length() - 2, str.length()), 16);
-        String commandString = str.substring(0, str.length() - 2);
-        String[] commandArray = commandString.split("FF");
-        for (String s : commandArray) {
-            System.out.println(s);
-            this.cardCommandMap.put(Integer.parseInt(s.substring(0, 2), 16), Integer.parseInt(s.substring(2, 4), 16));
+    public void setCardCommandMap(String commandString) {
+        String[] commandArray = commandString.split("/");
+        stopCardNum = Integer.parseInt(commandArray[commandArray.length - 1], 16);
+        for (int i = 0; i < commandArray.length - 1; i++) {
+            log.info("commandString:{}", commandArray[i]);
+            String[] c = commandArray[i].split(",");
+            this.cardCommandMap.put(Integer.parseInt(c[0],16), Integer.parseInt(c[1],16));
         }
-        if (this.firstInit) {
-            swerve(this.cardCommandMap.get(this.lastDetectCardNum));
-            this.firstInit = false;
-        } else {
-            this.state = State.FORWARD;
-        }
-
+        this.state = State.FORWARD;
     }
 
     public void changeState() {
         if (this.state == State.FORWARD || this.state == State.BACKWARD) {
-            this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 2);
+            this.cpuRunnable.sendStateToSystem(AGVNum, 2);
             this.state = State.STOP;
         } else if (this.state == State.STOP) {
             this.state = State.FORWARD;
-            this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 1);
+            this.cpuRunnable.sendStateToSystem(AGVNum, 1);
         }
     }
 
     public void stopTheAGV() {
         this.state = State.STOP;
-        this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 2);
+        this.cpuRunnable.sendStateToSystem(AGVNum, 2);
     }
 
     public void startTheAGV() {
         this.state = State.FORWARD;
-        this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 1);
+        this.cpuRunnable.sendStateToSystem(AGVNum, 1);
     }
 
     public int getX() {
@@ -299,7 +291,7 @@ public class AGVCar {
         this.cpuRunnable.setCarModelToCpu(this);
         if (this.cpuRunnable.connect()) {
             this.executor.execute(this.cpuRunnable);
-            this.cpuRunnable.sendReadCardToSystem(AGVNum, 0, 2);
+            this.cpuRunnable.sendStateToSystem(AGVNum, 2);
         }
     }
 }

@@ -15,7 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 @Component
-@Slf4j
+@Slf4j(topic = "develop")
 public class Main extends JFrame {
 
     private static final long serialVersionUID = 1L;
