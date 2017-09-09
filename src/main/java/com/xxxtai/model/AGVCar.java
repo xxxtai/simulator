@@ -1,8 +1,10 @@
 package com.xxxtai.model;
 
 import com.xxxtai.controller.AGVCpuRunnable;
+import com.xxxtai.myToolKit.Constant;
 import com.xxxtai.myToolKit.Orientation;
 import com.xxxtai.myToolKit.State;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -24,7 +26,8 @@ public class AGVCar {
     private ExecutorService executor;
     private Point position;
     private boolean finishEdge;
-    private State state = State.STOP;
+    private @Getter
+    State state = State.STOP;
     private Edge atEdge;
     private boolean isFirstInquire = true;
     private int detectCardNum;
@@ -236,11 +239,11 @@ public class AGVCar {
     }
 
     public void setCardCommandMap(String commandString) {
-        String[] commandArray = commandString.split("/");
+        String[] commandArray = commandString.split(Constant.SPLIT);
         stopCardNum = Integer.parseInt(commandArray[commandArray.length - 1], 16);
         for (int i = 0; i < commandArray.length - 1; i++) {
             log.info("commandString:{}", commandArray[i]);
-            String[] c = commandArray[i].split(",");
+            String[] c = commandArray[i].split(Constant.SUB_SPLIT);
             this.cardCommandMap.put(Integer.parseInt(c[0],16), Integer.parseInt(c[1],16));
         }
         this.state = State.FORWARD;

@@ -36,10 +36,10 @@ public class AGVCpuRunnable implements Runnable {
                 this.carModel.setLastCommunicationTime(System.currentTimeMillis());
 				log.info("AGV receive message:"+recMessage);
                 if (recMessage.endsWith(Constant.ROUTE_SUFFIX)) {
-                    this.carModel.setCardCommandMap(recMessage.substring(1, recMessage.length() - 1));
+                    this.carModel.setCardCommandMap(Constant.getContent(recMessage));
                 }
                 if (recMessage.startsWith(Constant.PREFIX) && recMessage.endsWith(Constant.COMMAND_SUFFIX)) {
-                    String content = recMessage.substring(1, recMessage.length() - 1);
+                    String content = Constant.getContent(recMessage);
                     String[] c = content.split(Constant.SPLIT);
                     if (Integer.valueOf(c[0], 16) == 1) {
                         this.carModel.startTheAGV();

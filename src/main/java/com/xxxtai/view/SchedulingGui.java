@@ -4,6 +4,7 @@ import com.xxxtai.main.Main;
 import com.xxxtai.model.AGVCar;
 import com.xxxtai.model.Graph;
 import com.xxxtai.myToolKit.Common;
+import com.xxxtai.myToolKit.State;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -96,7 +97,9 @@ public class SchedulingGui extends JPanel {
         public void actionPerformed(ActionEvent e) {
             repaint();
             for (AGVCar car : AGVArray) {
-                car.stepByStep();
+                if (car.getState().equals(State.FORWARD)) {
+                    car.stepByStep();
+                }
                 car.heartBeat();
             }
         }
