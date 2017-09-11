@@ -3,7 +3,9 @@ package com.xxxtai.view;
 import com.xxxtai.main.Main;
 import com.xxxtai.model.AGVCar;
 import com.xxxtai.model.Graph;
+import com.xxxtai.myToolKit.City;
 import com.xxxtai.myToolKit.Common;
+import com.xxxtai.myToolKit.Constant;
 import com.xxxtai.myToolKit.State;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 
 
@@ -26,6 +33,10 @@ public class SchedulingGui extends JPanel {
 
     private RoundButton drawingGuiBtn;
 
+    private Socket socket;
+
+    private PrintWriter printWriter;
+
     @Resource
     private Graph graph;
 
@@ -35,6 +46,8 @@ public class SchedulingGui extends JPanel {
     private ArrayList<AGVCar> AGVArray;
 
     private Timer timer;
+
+    private AGVCar seclectCar;
 
     private SchedulingGui() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -70,9 +83,28 @@ public class SchedulingGui extends JPanel {
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                     for (AGVCar car : AGVArray) {
                         if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
-                            car.getCpuRunnable().sendStateToSystem(car.getAGVNum(), State.UNLOADED.getValue());
+                            seclectCar = car;
                         }
                     }
+
+                    OptionView optionView = new OptionView("请选择");
+                    optionView.setLocation(e.getX(), e.getY());
+                    optionView.setOnDialogListener((option) -> {
+                        optionView.dispose();
+                        if (option.equals(OptionView.Option.SHIPMENT)) {
+                            FileNameDialog fileNameDialog = new FileNameDialog("到达城市:");
+                            fileNameDialog.setOnDialogListener((cityName, buttonState) -> {
+                                fileNameDialog.dispose();
+                                if (buttonState) {
+                                    printWriter.println(Constant.PREFIX + Integer.toHexString(seclectCar.getAtEdge().CARD_NUM) +
+                                            Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.QR_SUFFIX);
+                                    printWriter.flush();
+                                }
+                            });
+                        } else if (option.equals(OptionView.Option.UNLOADING)) {
+                            seclectCar.getCpuRunnable().sendStateToSystem(seclectCar.getAGVNum(), State.UNLOADED.getValue());
+                        }
+                    });
                 }
             }
         });
@@ -82,12 +114,20 @@ public class SchedulingGui extends JPanel {
 
     public void init(ApplicationContext context) {
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 7; i++) {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(i).init(i + 1);
         }
         timer.start();
 
+        try {
+            this.socket = new Socket("127.0.0.1", 8001);
+            printWriter = new PrintWriter(socket.getOutputStream());
+            printWriter.println(Constant.PREFIX + 0 + Constant.SPLIT + 0 + Constant.QR_SUFFIX);
+            printWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

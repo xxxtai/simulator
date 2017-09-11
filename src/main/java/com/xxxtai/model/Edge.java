@@ -6,7 +6,7 @@ public class Edge {
     public final Node START_NODE;
     public final Node END_NODE;
     final int REAL_DISTANCE;
-    final int CARD_NUM;
+    public final int CARD_NUM;
     final Point CARD_POSITION;
 
     Edge(Node str, Node end, int dis, int CardNum) {

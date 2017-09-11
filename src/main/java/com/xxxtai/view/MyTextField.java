@@ -1,4 +1,4 @@
-package com.xxxtai.myToolKit;
+package com.xxxtai.view;
 
 import javax.swing.*;
 import java.awt.*;

@@ -47,7 +47,6 @@ public class Main extends JFrame {
         settingGui.getGuiInstance(Main.this, schedulingGui, graphingGui);
         schedulingGui.getGuiInstance(Main.this, settingGui, graphingGui);
         schedulingGui.init(context);
-        settingGui.init();
 
         this.getContentPane().add(schedulingGui);
         this.repaint();

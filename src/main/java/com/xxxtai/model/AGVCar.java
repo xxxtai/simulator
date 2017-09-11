@@ -29,7 +29,8 @@ public class AGVCar {
     private boolean finishEdge;
     private @Getter
     State state = State.STOP;
-    private Edge atEdge;
+    private @Getter
+    Edge atEdge;
     private boolean isFirstInquire = true;
     private int detectCardNum;
     private int lastDetectCardNum;
@@ -58,14 +59,8 @@ public class AGVCar {
             this.executor.execute(this.cpuRunnable);
             this.cpuRunnable.heartBeat(AGVNum);
         }
-        if (AGVNum == 1)
-            setAtEdge(graph.getEdge(0));
 
-        if (AGVNum == 2)
-            setAtEdge(graph.getEdge(3));
-
-        if (AGVNum == 3)
-            setAtEdge(graph.getEdge(6));
+        setAtEdge(graph.getEdge((AGVNum - 1)*2));
     }
 
     private void setAtEdge(Edge edge) {
@@ -244,7 +239,6 @@ public class AGVCar {
         String[] commandArray = commandString.split(Constant.SPLIT);
         stopCardNum = Integer.parseInt(commandArray[commandArray.length - 1], 16);
         for (int i = 0; i < commandArray.length - 1; i++) {
-            log.info("commandString:{}", commandArray[i]);
             String[] c = commandArray[i].split(Constant.SUB_SPLIT);
             this.cardCommandMap.put(Integer.parseInt(c[0],16), Integer.parseInt(c[1],16));
         }
