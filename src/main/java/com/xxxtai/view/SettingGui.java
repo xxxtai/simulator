@@ -1,6 +1,7 @@
 package com.xxxtai.view;
 
 import com.xxxtai.main.Main;
+import com.xxxtai.myToolKit.City;
 import com.xxxtai.myToolKit.Common;
 import com.xxxtai.myToolKit.Constant;
 import com.xxxtai.myToolKit.MyTextField;
@@ -48,7 +49,7 @@ public class SettingGui extends JPanel {
         confirmBtn.setBounds(5 * screenSize.width / 12, 6 * screenSize.height / 15, screenSize.width / 6, screenSize.height / 20);
         confirmBtn.addActionListener(e -> {
             printWriter.println(Constant.PREFIX + Integer.toHexString(Integer.parseInt(entranceField.getText())) +
-                    Constant.SPLIT + Integer.toHexString(Integer.parseInt(exitField.getText())) + Constant.QR_SUFFIX);
+                    Constant.SPLIT + Long.toHexString(City.valueOfName(exitField.getText()).getCode()) + Constant.QR_SUFFIX);
             printWriter.flush();
         });
 

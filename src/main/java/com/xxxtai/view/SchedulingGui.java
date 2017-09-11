@@ -62,11 +62,15 @@ public class SchedulingGui extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    int x = e.getX();
-                    int y = e.getY();
                     for (AGVCar car : AGVArray) {
-                        if (Math.abs(x - car.getX()) < 40 && Math.abs(y - car.getY()) < 40) {
+                        if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
                             car.changeState();
+                        }
+                    }
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    for (AGVCar car : AGVArray) {
+                        if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
+                            car.getCpuRunnable().sendStateToSystem(car.getAGVNum(), State.UNLOADED.getValue());
                         }
                     }
                 }

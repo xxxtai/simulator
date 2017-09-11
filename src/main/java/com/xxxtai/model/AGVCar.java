@@ -21,7 +21,8 @@ import java.util.concurrent.Executors;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j(topic = "develop")
 public class AGVCar {
-    private int AGVNum;
+    private @Getter
+    int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
     private ExecutorService executor;
     private Point position;
@@ -36,6 +37,7 @@ public class AGVCar {
     private int stopCardNum;
     private long lastCommunicationTime;
     private long count_3s;
+    @Getter
     @Resource
     private AGVCpuRunnable cpuRunnable;
     @Resource
@@ -251,22 +253,22 @@ public class AGVCar {
 
     public void changeState() {
         if (this.state == State.FORWARD || this.state == State.BACKWARD) {
-            this.cpuRunnable.sendStateToSystem(AGVNum, 2);
+            this.cpuRunnable.sendStateToSystem(AGVNum, State.STOP.getValue());
             this.state = State.STOP;
         } else if (this.state == State.STOP) {
             this.state = State.FORWARD;
-            this.cpuRunnable.sendStateToSystem(AGVNum, 1);
+            this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
         }
     }
 
     public void stopTheAGV() {
         this.state = State.STOP;
-        this.cpuRunnable.sendStateToSystem(AGVNum, 2);
+        this.cpuRunnable.sendStateToSystem(AGVNum, State.STOP.getValue());
     }
 
     public void startTheAGV() {
         this.state = State.FORWARD;
-        this.cpuRunnable.sendStateToSystem(AGVNum, 1);
+        this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
     }
 
     public int getX() {
