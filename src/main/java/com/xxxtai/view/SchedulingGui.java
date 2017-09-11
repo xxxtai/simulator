@@ -17,9 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -33,8 +31,6 @@ public class SchedulingGui extends JPanel {
 
     private RoundButton drawingGuiBtn;
 
-    private Socket socket;
-
     private PrintWriter printWriter;
 
     @Resource
@@ -47,7 +43,7 @@ public class SchedulingGui extends JPanel {
 
     private Timer timer;
 
-    private AGVCar seclectCar;
+    private AGVCar selectCar;
 
     private SchedulingGui() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -83,7 +79,7 @@ public class SchedulingGui extends JPanel {
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                     for (AGVCar car : AGVArray) {
                         if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
-                            seclectCar = car;
+                            selectCar = car;
                         }
                     }
 
@@ -96,13 +92,13 @@ public class SchedulingGui extends JPanel {
                             fileNameDialog.setOnDialogListener((cityName, buttonState) -> {
                                 fileNameDialog.dispose();
                                 if (buttonState) {
-                                    printWriter.println(Constant.PREFIX + Integer.toHexString(seclectCar.getAtEdge().CARD_NUM) +
+                                    printWriter.println(Constant.PREFIX + Integer.toHexString(selectCar.getAtEdge().CARD_NUM) +
                                             Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.QR_SUFFIX);
                                     printWriter.flush();
                                 }
                             });
                         } else if (option.equals(OptionView.Option.UNLOADING)) {
-                            seclectCar.getCpuRunnable().sendStateToSystem(seclectCar.getAGVNum(), State.UNLOADED.getValue());
+                            selectCar.getCpuRunnable().sendStateToSystem(selectCar.getAGVNum(), State.UNLOADED.getValue());
                         }
                     });
                 }
@@ -121,7 +117,7 @@ public class SchedulingGui extends JPanel {
         timer.start();
 
         try {
-            this.socket = new Socket("127.0.0.1", 8001);
+            Socket socket = new Socket("127.0.0.1", 8001);
             printWriter = new PrintWriter(socket.getOutputStream());
             printWriter.println(Constant.PREFIX + 0 + Constant.SPLIT + 0 + Constant.QR_SUFFIX);
             printWriter.flush();
