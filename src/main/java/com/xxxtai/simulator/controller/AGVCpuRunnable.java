@@ -1,14 +1,12 @@
-package com.xxxtai.controller;
+package com.xxxtai.simulator.controller;
 
-import com.xxxtai.model.AGVCar;
-import com.xxxtai.myToolKit.Constant;
+import com.xxxtai.simulator.model.AGVCar;
+import com.xxxtai.express.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
-import java.net.SocketException;
 
 @Component
 @Slf4j(topic = "develop")

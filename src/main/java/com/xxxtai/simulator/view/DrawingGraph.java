@@ -1,9 +1,9 @@
-package com.xxxtai.view;
+package com.xxxtai.simulator.view;
 
-import com.xxxtai.model.AGVCar;
-import com.xxxtai.model.Edge;
-import com.xxxtai.model.Graph;
-import com.xxxtai.myToolKit.Orientation;
+import com.xxxtai.express.model.Edge;
+import com.xxxtai.simulator.model.AGVCar;
+import com.xxxtai.simulator.model.Graph;
+import com.xxxtai.express.constant.Orientation;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -41,24 +41,19 @@ public class DrawingGraph {
 
         for (Edge e : graph.getEdgeArray()) {
             g.setColor(Color.BLACK);
-            g.drawLine(e.START_NODE.X, e.START_NODE.Y, e.END_NODE.X, e.END_NODE.Y);
-//			g.setColor(Color.BLUE);
-//			g.drawString(String.valueOf(e.CARD_NUM), e.CARD_POSITION.x - 10, e.CARD_POSITION.y-10);
+            g.drawLine(e.startNode.x, e.startNode.y, e.endNode.x, e.endNode.y);
         }
 
         for (int i = 0; i < graph.getNodeArraySize(); i++) {
             g.setColor(Color.YELLOW);
-            g.fillRect(graph.getNode(i).X - 5, graph.getNode(i).Y - 5, 10, 10);
-//			g.setColor(Color.RED);
-//			
-//			g.drawString(String.valueOf(graph.getNode(i).NUM),graph.getNode(i).X + 10, graph.getNode(i).Y - 10);
+            g.fillRect(graph.getNode(i).x - 5, graph.getNode(i).y - 5, 10, 10);
             g.setColor(Color.BLUE);
-            g.drawString(String.valueOf(graph.getNode(i).CARD_NUM), graph.getNode(i).X + 10, graph.getNode(i).Y + 25);
+            g.drawString(String.valueOf(graph.getNode(i).cardNum), graph.getNode(i).x + 10, graph.getNode(i).y + 25);
         }
     }
 
 
-    void drawingCar(Graphics g, Graph graph, ArrayList<AGVCar> AGVArray, JPanel panel) {
+    void drawingCar(Graphics g, ArrayList<AGVCar> AGVArray, JPanel panel) {
         g.setColor(Color.black);
         g.setFont(new Font("Dialog", Font.BOLD, 25));
         for (int i = 0; i < AGVArray.size(); i++) {

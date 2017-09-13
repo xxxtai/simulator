@@ -1,9 +1,11 @@
-package com.xxxtai.model;
+package com.xxxtai.simulator.model;
 
-import com.xxxtai.controller.AGVCpuRunnable;
-import com.xxxtai.myToolKit.Constant;
-import com.xxxtai.myToolKit.Orientation;
-import com.xxxtai.myToolKit.State;
+import com.xxxtai.express.constant.Command;
+import com.xxxtai.express.model.Edge;
+import com.xxxtai.simulator.controller.AGVCpuRunnable;
+import com.xxxtai.express.constant.Constant;
+import com.xxxtai.express.constant.Orientation;
+import com.xxxtai.express.constant.State;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -65,8 +67,8 @@ public class AGVCar {
 
     private void setAtEdge(Edge edge) {
         this.atEdge = edge;
-        this.position.x = this.atEdge.START_NODE.X;
-        this.position.y = this.atEdge.START_NODE.Y;
+        this.position.x = this.atEdge.startNode.x;
+        this.position.y = this.atEdge.startNode.y;
         this.finishEdge = false;
         judgeOrientation();
     }
@@ -74,31 +76,31 @@ public class AGVCar {
     public void stepByStep() {
         if (!finishEdge && (state == State.FORWARD || state == State.BACKWARD)
                 && this.atEdge != null) {
-            int FORWARD_PIX = 3;
-            if (this.atEdge.START_NODE.X == this.atEdge.END_NODE.X) {
-                if (this.atEdge.START_NODE.Y < this.atEdge.END_NODE.Y) {
-                    if (this.position.y < this.atEdge.END_NODE.Y) {
-                        this.position.y += FORWARD_PIX;
+            int FORWARD_PIx = 3;
+            if (this.atEdge.startNode.x == this.atEdge.endNode.x) {
+                if (this.atEdge.startNode.y < this.atEdge.endNode.y) {
+                    if (this.position.y < this.atEdge.endNode.y) {
+                        this.position.y += FORWARD_PIx;
                     } else {
                         this.finishEdge = true;
                     }
-                } else if (atEdge.START_NODE.Y > atEdge.END_NODE.Y) {
-                    if (this.position.y > this.atEdge.END_NODE.Y) {
-                        this.position.y -= FORWARD_PIX;
+                } else if (atEdge.startNode.y > atEdge.endNode.y) {
+                    if (this.position.y > this.atEdge.endNode.y) {
+                        this.position.y -= FORWARD_PIx;
                     } else {
                         this.finishEdge = true;
                     }
                 }
-            } else if (this.atEdge.START_NODE.Y == this.atEdge.END_NODE.Y) {
-                if (this.atEdge.START_NODE.X < this.atEdge.END_NODE.X) {
-                    if (this.position.x < this.atEdge.END_NODE.X) {
-                        this.position.x += FORWARD_PIX;
+            } else if (this.atEdge.startNode.y == this.atEdge.endNode.y) {
+                if (this.atEdge.startNode.x < this.atEdge.endNode.x) {
+                    if (this.position.x < this.atEdge.endNode.x) {
+                        this.position.x += FORWARD_PIx;
                     } else {
                         this.finishEdge = true;
                     }
-                } else if (this.atEdge.START_NODE.X > this.atEdge.END_NODE.X) {
-                    if (this.position.x > this.atEdge.END_NODE.X) {
-                        this.position.x -= FORWARD_PIX;
+                } else if (this.atEdge.startNode.x > this.atEdge.endNode.x) {
+                    if (this.position.x > this.atEdge.endNode.x) {
+                        this.position.x -= FORWARD_PIx;
                     } else {
                         this.finishEdge = true;
                     }
@@ -137,14 +139,14 @@ public class AGVCar {
     }
 
     private void judgeOrientation() {
-        if (atEdge.START_NODE.X == atEdge.END_NODE.X) {
-            if (atEdge.START_NODE.Y < atEdge.END_NODE.Y) {
+        if (atEdge.startNode.x == atEdge.endNode.x) {
+            if (atEdge.startNode.y < atEdge.endNode.y) {
                 orientation = Orientation.DOWN;
             } else {
                 orientation = Orientation.UP;
             }
-        } else if (atEdge.START_NODE.Y == atEdge.END_NODE.Y) {
-            if (atEdge.START_NODE.X < atEdge.END_NODE.X) {
+        } else if (atEdge.startNode.y == atEdge.endNode.y) {
+            if (atEdge.startNode.x < atEdge.endNode.x) {
                 orientation = Orientation.RIGHT;
             } else {
                 orientation = Orientation.LEFT;
@@ -155,21 +157,21 @@ public class AGVCar {
     private boolean patrolLine(Orientation orientation) {
         boolean isFound = false;
         for (Edge e : graph.getEdgeArray()) {
-            if (this.atEdge.END_NODE.CARD_NUM == e.START_NODE.CARD_NUM && this.atEdge.START_NODE.CARD_NUM != e.END_NODE.CARD_NUM) {
-                if ((orientation == Orientation.RIGHT && e.START_NODE.Y == e.END_NODE.Y && e.START_NODE.X < e.END_NODE.X)
-                        || (orientation == Orientation.DOWN && e.START_NODE.X == e.END_NODE.X && e.START_NODE.Y < e.END_NODE.Y)
-                        || (orientation == Orientation.LEFT && e.START_NODE.Y == e.END_NODE.Y && e.START_NODE.X > e.END_NODE.X)
-                        || (orientation == Orientation.UP && e.START_NODE.X == e.END_NODE.X && e.START_NODE.Y > e.END_NODE.Y)) {
+            if (this.atEdge.endNode.cardNum.equals(e.startNode.cardNum) && !this.atEdge.startNode.cardNum.equals(e.endNode.cardNum)) {
+                if ((orientation == Orientation.RIGHT && e.startNode.y == e.endNode.y && e.startNode.x < e.endNode.x)
+                        || (orientation == Orientation.DOWN && e.startNode.x == e.endNode.x && e.startNode.y < e.endNode.y)
+                        || (orientation == Orientation.LEFT && e.startNode.y == e.endNode.y && e.startNode.x > e.endNode.x)
+                        || (orientation == Orientation.UP && e.startNode.x == e.endNode.x && e.startNode.y > e.endNode.y)) {
                     setAtEdge(e);
                     isFound = true;
                     break;
                 }
-            } else if (this.atEdge.END_NODE.CARD_NUM == e.END_NODE.CARD_NUM && this.atEdge.START_NODE.CARD_NUM != e.START_NODE.CARD_NUM) {
-                if ((orientation == Orientation.RIGHT && e.START_NODE.Y == e.END_NODE.Y && e.START_NODE.X > e.END_NODE.X)
-                        || (orientation == Orientation.DOWN && e.START_NODE.X == e.END_NODE.X && e.START_NODE.Y > e.END_NODE.Y)
-                        || (orientation == Orientation.LEFT && e.START_NODE.Y == e.END_NODE.Y && e.START_NODE.X < e.END_NODE.X)
-                        || (orientation == Orientation.UP && e.START_NODE.X == e.END_NODE.X && e.START_NODE.Y < e.END_NODE.Y)) {
-                    setAtEdge(new Edge(e.END_NODE, e.START_NODE, e.REAL_DISTANCE, e.CARD_NUM));
+            } else if (this.atEdge.endNode.cardNum.equals(e.endNode.cardNum) && !this.atEdge.startNode.cardNum.equals(e.startNode.cardNum)) {
+                if ((orientation == Orientation.RIGHT && e.startNode.y == e.endNode.y && e.startNode.x > e.endNode.x)
+                        || (orientation == Orientation.DOWN && e.startNode.x == e.endNode.x && e.startNode.y > e.endNode.y)
+                        || (orientation == Orientation.LEFT && e.startNode.y == e.endNode.y && e.startNode.x < e.endNode.x)
+                        || (orientation == Orientation.UP && e.startNode.x == e.endNode.x && e.startNode.y < e.endNode.y)) {
+                    setAtEdge(new Edge(e.endNode, e.startNode, e.realDistance, e.cardNum));
                     isFound = true;
                     break;
                 }
@@ -178,10 +180,10 @@ public class AGVCar {
         return isFound;
     }
 
-    private boolean swerve(int signal) {//1、左转；2、右转；3、前进
+    private boolean swerve(Integer commandValue) {//1、左转；2、右转；3、前进
         boolean isFound = false;
         this.isFirstInquire = false;
-        if (signal == 1) {
+        if (commandValue == Command.TURN_LEFT.getValue()) {
             switch (this.orientation) {
                 case RIGHT:
                     isFound = patrolLine(Orientation.UP);
@@ -196,7 +198,7 @@ public class AGVCar {
                     isFound = patrolLine(Orientation.RIGHT);
                     break;
             }
-        } else if (signal == 2) {
+        } else if (commandValue == Command.TURN_RIGHT.getValue()) {
             switch (this.orientation) {
                 case RIGHT:
                     isFound = patrolLine(Orientation.DOWN);
@@ -211,7 +213,7 @@ public class AGVCar {
                     isFound = patrolLine(Orientation.LEFT);
                     break;
             }
-        } else if (signal == 3) {
+        } else if (commandValue == Command.GO_AHEAD.getValue()) {
             isFound = patrolLine(this.orientation);
         }
         if (isFound) {
@@ -224,13 +226,13 @@ public class AGVCar {
     private int detectRFIDCard() {
         int foundCard = 0;
         if (Math.abs(this.position.x - this.atEdge.CARD_POSITION.x) < 4 && Math.abs(this.position.y - this.atEdge.CARD_POSITION.y) < 4)
-            foundCard = this.atEdge.CARD_NUM;
+            foundCard = this.atEdge.cardNum;
 
-        if (Math.abs(this.position.x - this.atEdge.START_NODE.X) < 4 && Math.abs(this.position.y - this.atEdge.START_NODE.Y) < 4)
-            foundCard = this.atEdge.START_NODE.CARD_NUM;
+        if (Math.abs(this.position.x - this.atEdge.startNode.x) < 4 && Math.abs(this.position.y - this.atEdge.startNode.y) < 4)
+            foundCard = this.atEdge.startNode.cardNum;
 
-        if (Math.abs(this.position.x - this.atEdge.END_NODE.X) < 4 && Math.abs(this.position.y - this.atEdge.END_NODE.Y) < 4)
-            foundCard = this.atEdge.END_NODE.CARD_NUM;
+        if (Math.abs(this.position.x - this.atEdge.endNode.x) < 4 && Math.abs(this.position.y - this.atEdge.endNode.y) < 4)
+            foundCard = this.atEdge.endNode.cardNum;
 
         return foundCard;
     }
@@ -265,14 +267,6 @@ public class AGVCar {
         this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
     }
 
-    public int getX() {
-        return this.position.x;
-    }
-
-    public int getY() {
-        return this.position.y;
-    }
-
     public Orientation getOrientation() {
         return this.orientation;
     }
@@ -292,5 +286,13 @@ public class AGVCar {
             this.executor.execute(this.cpuRunnable);
             this.cpuRunnable.sendStateToSystem(AGVNum, 2);
         }
+    }
+
+    public int getX(){
+        return position.x;
+    }
+
+    public int getY(){
+        return position.y;
     }
 }

@@ -1,5 +1,8 @@
-package com.xxxtai.model;
+package com.xxxtai.simulator.model;
 
+import com.xxxtai.express.constant.NodeFunction;
+import com.xxxtai.express.model.Edge;
+import com.xxxtai.express.model.Node;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -87,20 +90,19 @@ public class Graph {
     }
 
     private void addImportNode(int cardNum, int x, int y) {
-        nodeArray.add(new Node(cardNum, x, y));
+        nodeArray.add(new Node(cardNum, x, y, NodeFunction.NULL));
     }
 
     private void addEdge(int strNodeNum, int endNodeNum, int dis, int CardNum) {
         for (int i = 0; i < nodeArray.size(); i++) {
-            if (nodeArray.get(i).CARD_NUM == strNodeNum)
+            if (nodeArray.get(i).cardNum == strNodeNum)
                 strNodeNum = i;
         }
         for (int i = 0; i < nodeArray.size(); i++) {
-            if (nodeArray.get(i).CARD_NUM == endNodeNum)
+            if (nodeArray.get(i).cardNum == endNodeNum)
                 endNodeNum = i;
         }
 
-        edgeArray.add(new Edge(nodeArray.get(strNodeNum), nodeArray.get(endNodeNum)
-                , dis, CardNum));
+        edgeArray.add(new Edge(nodeArray.get(strNodeNum), nodeArray.get(endNodeNum), dis, CardNum));
     }
 }

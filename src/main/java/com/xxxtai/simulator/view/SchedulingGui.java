@@ -1,12 +1,14 @@
-package com.xxxtai.view;
+package com.xxxtai.simulator.view;
 
-import com.xxxtai.main.Main;
-import com.xxxtai.model.AGVCar;
-import com.xxxtai.model.Graph;
-import com.xxxtai.myToolKit.City;
-import com.xxxtai.myToolKit.Common;
-import com.xxxtai.myToolKit.Constant;
-import com.xxxtai.myToolKit.State;
+import com.xxxtai.simulator.main.SimulatorMain;
+import com.xxxtai.simulator.model.AGVCar;
+import com.xxxtai.simulator.model.Graph;
+import com.xxxtai.express.constant.City;
+import com.xxxtai.express.constant.Constant;
+import com.xxxtai.express.constant.State;
+import com.xxxtai.express.toolKit.Common;
+import com.xxxtai.express.view.FileNameDialog;
+import com.xxxtai.express.view.RoundButton;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -92,7 +94,7 @@ public class SchedulingGui extends JPanel {
                             fileNameDialog.setOnDialogListener((cityName, buttonState) -> {
                                 fileNameDialog.dispose();
                                 if (buttonState) {
-                                    printWriter.println(Constant.PREFIX + Integer.toHexString(selectCar.getAtEdge().CARD_NUM) +
+                                    printWriter.println(Constant.PREFIX + Integer.toHexString(selectCar.getAtEdge().cardNum) +
                                             Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.QR_SUFFIX);
                                     printWriter.flush();
                                 }
@@ -145,8 +147,8 @@ public class SchedulingGui extends JPanel {
         }
     }
 
-    public void getGuiInstance(Main main, SettingGui settingGui, DrawingGui drawingGui) {
-        settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
-        drawingGuiBtn.addActionListener(e -> Common.changePanel(main, drawingGui));
+    public void getGuiInstance(SimulatorMain simulatorMain, SettingGui settingGui, DrawingGui drawingGui) {
+        settingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, settingGui));
+        drawingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, drawingGui));
     }
 }

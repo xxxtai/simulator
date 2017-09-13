@@ -1,15 +1,11 @@
-package com.xxxtai.controller;
+package com.xxxtai.simulator.controller;
 
-import com.xxxtai.myToolKit.ReaderWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -67,8 +63,7 @@ public class CommunicationModule {
             this.printWriter.close();
             this.socket.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("exception:", e);
         }
 
     }

@@ -1,18 +1,13 @@
-package com.xxxtai.view;
+package com.xxxtai.simulator.view;
 
-import com.xxxtai.main.Main;
-import com.xxxtai.myToolKit.City;
-import com.xxxtai.myToolKit.Common;
-import com.xxxtai.myToolKit.Constant;
+import com.xxxtai.simulator.main.SimulatorMain;
+import com.xxxtai.express.toolKit.Common;
+import com.xxxtai.express.toolKit.MyTextField;
+import com.xxxtai.express.view.RoundButton;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 @Component
 public class SettingGui extends JPanel {
@@ -56,8 +51,8 @@ public class SettingGui extends JPanel {
 
     }
 
-    public void getGuiInstance(Main main, SchedulingGui schedulingGui, DrawingGui drawingGui) {
-        schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, schedulingGui));
-        drawingGuiBtn.addActionListener(e -> Common.changePanel(main, drawingGui));
+    public void getGuiInstance(SimulatorMain simulatorMain, SchedulingGui schedulingGui, DrawingGui drawingGui) {
+        schedulingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, schedulingGui));
+        drawingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, drawingGui));
     }
 }

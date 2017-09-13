@@ -1,7 +1,8 @@
-package com.xxxtai.view;
+package com.xxxtai.simulator.view;
 
-import com.xxxtai.main.Main;
-import com.xxxtai.myToolKit.Common;
+import com.xxxtai.express.toolKit.Common;
+import com.xxxtai.express.view.RoundButton;
+import com.xxxtai.simulator.main.SimulatorMain;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -41,9 +42,9 @@ public class DrawingGui extends JPanel {
     }
 
 
-    public void getGuiInstance(Main main, SchedulingGui schedulingGui, SettingGui settingGui) {
-        schedulingGuiBtn.addActionListener(e -> Common.changePanel(main, schedulingGui));
-        settingGuiBtn.addActionListener(e -> Common.changePanel(main, settingGui));
+    public void getGuiInstance(SimulatorMain simulatorMain, SchedulingGui schedulingGui, SettingGui settingGui) {
+        schedulingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, schedulingGui));
+        settingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, settingGui));
     }
 
 }

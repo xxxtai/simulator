@@ -1,8 +1,8 @@
-package com.xxxtai.main;
+package com.xxxtai.simulator.main;
 
-import com.xxxtai.view.DrawingGui;
-import com.xxxtai.view.SchedulingGui;
-import com.xxxtai.view.SettingGui;
+import com.xxxtai.simulator.view.DrawingGui;
+import com.xxxtai.simulator.view.SchedulingGui;
+import com.xxxtai.simulator.view.SettingGui;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
 
 @Component
 @Slf4j(topic = "develop")
-public class Main extends JFrame {
+public class SimulatorMain extends JFrame {
 
     private static final long serialVersionUID = 1L;
     @Resource
@@ -26,7 +26,7 @@ public class Main extends JFrame {
     @Resource
     private DrawingGui graphingGui;
 
-    public Main() {
+    public SimulatorMain() {
         super("模拟多AGV场景");
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -43,9 +43,9 @@ public class Main extends JFrame {
     }
 
     private void init(ApplicationContext context) {
-        graphingGui.getGuiInstance(Main.this, schedulingGui, settingGui);
-        settingGui.getGuiInstance(Main.this, schedulingGui, graphingGui);
-        schedulingGui.getGuiInstance(Main.this, settingGui, graphingGui);
+        graphingGui.getGuiInstance(SimulatorMain.this, schedulingGui, settingGui);
+        settingGui.getGuiInstance(SimulatorMain.this, schedulingGui, graphingGui);
+        schedulingGui.getGuiInstance(SimulatorMain.this, settingGui, graphingGui);
         schedulingGui.init(context);
 
         this.getContentPane().add(schedulingGui);
@@ -56,8 +56,8 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("/META-INF/spring/beans.xml");
-        Main main = context.getBean(Main.class);
-        main.init(context);
+        SimulatorMain simulatorMain = context.getBean(SimulatorMain.class);
+        simulatorMain.init(context);
     }
 
     public void exit() {
