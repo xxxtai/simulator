@@ -1,8 +1,8 @@
 package com.xxxtai.simulator.main;
 
-import com.xxxtai.simulator.view.DrawingGui;
+import com.xxxtai.express.view.DrawingGui;
+import com.xxxtai.express.view.SettingGui;
 import com.xxxtai.simulator.view.SchedulingGui;
-import com.xxxtai.simulator.view.SettingGui;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

@@ -1,7 +1,11 @@
 package com.xxxtai.simulator.model;
 
 import com.xxxtai.express.constant.Command;
+import com.xxxtai.express.controller.CommunicationWithAGV;
+import com.xxxtai.express.controller.TrafficControl;
+import com.xxxtai.express.model.Car;
 import com.xxxtai.express.model.Edge;
+import com.xxxtai.express.model.Graph;
 import com.xxxtai.simulator.controller.AGVCpuRunnable;
 import com.xxxtai.express.constant.Constant;
 import com.xxxtai.express.constant.Orientation;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,7 +27,7 @@ import java.util.concurrent.Executors;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j(topic = "develop")
-public class AGVCar {
+public class AGVCar implements Car{
     private @Getter
     int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
@@ -40,7 +45,6 @@ public class AGVCar {
     private int stopCardNum;
     private long lastCommunicationTime;
     private long count_3s;
-    @Getter
     @Resource
     private AGVCpuRunnable cpuRunnable;
     @Resource
@@ -62,7 +66,12 @@ public class AGVCar {
             this.cpuRunnable.heartBeat(AGVNum);
         }
 
-        setAtEdge(graph.getEdge((AGVNum - 1)*2));
+        setAtEdge(graph.getEdgeMap().get(113 + (AGVNum - 1)*2));
+    }
+
+    @Override
+    public void setReceiveCardNum(int i) {
+
     }
 
     private void setAtEdge(Edge edge) {
@@ -279,6 +288,11 @@ public class AGVCar {
         this.lastCommunicationTime = time;
     }
 
+    @Override
+    public Runnable getCommunicationRunnable() {
+        return cpuRunnable;
+    }
+
     public void setNewCpuRunnable() {
         this.cpuRunnable = new AGVCpuRunnable();
         this.cpuRunnable.setCarModelToCpu(this);
@@ -288,11 +302,45 @@ public class AGVCar {
         }
     }
 
+    @Override
     public int getX(){
         return position.x;
     }
 
+    @Override
     public int getY(){
         return position.y;
     }
+
+    @Override
+    public TrafficControl getTrafficControl() {
+        return null;
+    }
+
+    @Override
+    public int getReadCardNum() {
+        return 0;
+    }
+
+    @Override
+    public boolean isOnDuty() {
+        return false;
+    }
+
+    @Override
+    public boolean isOnEntrance() {
+        return false;
+    }
+
+    @Override
+    public void setCommunicationWithAGV(CommunicationWithAGV communicationWithAGV) {}
+
+    @Override
+    public void sendMessageToAGV(String s) {}
+
+    @Override
+    public void setState(int i) {}
+
+    @Override
+    public void setRouteNodeNumArray(List<Integer> list) {}
 }

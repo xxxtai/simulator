@@ -1,8 +1,9 @@
 package com.xxxtai.simulator.view;
 
-import com.xxxtai.simulator.main.SimulatorMain;
+import com.xxxtai.express.model.Car;
+import com.xxxtai.express.view.DrawingGraph;
+import com.xxxtai.simulator.controller.AGVCpuRunnable;
 import com.xxxtai.simulator.model.AGVCar;
-import com.xxxtai.simulator.model.Graph;
 import com.xxxtai.express.constant.City;
 import com.xxxtai.express.constant.Constant;
 import com.xxxtai.express.constant.State;
@@ -36,16 +37,13 @@ public class SchedulingGui extends JPanel {
     private PrintWriter printWriter;
 
     @Resource
-    private Graph graph;
-
-    @Resource
     private DrawingGraph drawingGraph;
 
-    private ArrayList<AGVCar> AGVArray;
+    private ArrayList<Car> AGVArray;
 
     private Timer timer;
 
-    private AGVCar selectCar;
+    private Car selectCar;
 
     private SchedulingGui() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -73,13 +71,13 @@ public class SchedulingGui extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    for (AGVCar car : AGVArray) {
+                    for (Car car : AGVArray) {
                         if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
-                            car.changeState();
+                            ((AGVCar)car).changeState();
                         }
                     }
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
-                    for (AGVCar car : AGVArray) {
+                    for (Car car : AGVArray) {
                         if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
                             selectCar = car;
                         }
@@ -100,7 +98,7 @@ public class SchedulingGui extends JPanel {
                                 }
                             });
                         } else if (option.equals(OptionView.Option.UNLOADING)) {
-                            selectCar.getCpuRunnable().sendStateToSystem(selectCar.getAGVNum(), State.UNLOADED.getValue());
+                            ((AGVCpuRunnable)selectCar.getCommunicationRunnable()).sendStateToSystem(selectCar.getAGVNum(), State.UNLOADED.getValue());
                         }
                     });
                 }
@@ -131,15 +129,15 @@ public class SchedulingGui extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        drawingGraph.drawingMap(g, graph);
-        drawingGraph.drawingCar(g, AGVArray, this);
+        drawingGraph.drawingMap(g, DrawingGraph.Style.SIMULATOR);
+        drawingGraph.drawingAGV(g, AGVArray, this);
     }
 
     class RepaintTimerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             repaint();
-            for (AGVCar car : AGVArray) {
-                if (car.getState().equals(State.FORWARD)) {
+            for (Car car : AGVArray) {
+                if (((AGVCar)car).getState().equals(State.FORWARD)) {
                     car.stepByStep();
                 }
                 car.heartBeat();

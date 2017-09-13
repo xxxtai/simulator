@@ -9,4 +9,12 @@
 	
 	<context:component-scan base-package="com.xxxtai.simulator"/>
 
+	<bean id="graph" class="com.xxxtai.express.model.Graph"/>
+
+	<bean id="settingGui" class="com.xxxtai.express.view.SettingGui"/>
+
+	<bean id="drawingGui" class="com.xxxtai.express.view.DrawingGui"/>
+
+	<bean id="drawingGraph" class="com.xxxtai.express.view.DrawingGraph"/>
+
 </beans>
