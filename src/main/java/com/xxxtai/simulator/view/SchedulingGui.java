@@ -132,7 +132,7 @@ public class SchedulingGui extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         drawingGraph.drawingMap(g, graph);
-        drawingGraph.drawingCar(g, graph, AGVArray, this);
+        drawingGraph.drawingCar(g, AGVArray, this);
     }
 
     class RepaintTimerListener implements ActionListener {
@@ -147,7 +147,7 @@ public class SchedulingGui extends JPanel {
         }
     }
 
-    public void getGuiInstance(SimulatorMain simulatorMain, SettingGui settingGui, DrawingGui drawingGui) {
+    public void getGuiInstance(JFrame simulatorMain, JPanel settingGui, JPanel drawingGui) {
         settingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, settingGui));
         drawingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, drawingGui));
     }

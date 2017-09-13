@@ -1,5 +1,6 @@
 package com.xxxtai.simulator.view;
 
+import com.xxxtai.express.view.DrawingGui;
 import com.xxxtai.simulator.main.SimulatorMain;
 import com.xxxtai.express.toolKit.Common;
 import com.xxxtai.express.toolKit.MyTextField;
@@ -51,7 +52,7 @@ public class SettingGui extends JPanel {
 
     }
 
-    public void getGuiInstance(SimulatorMain simulatorMain, SchedulingGui schedulingGui, DrawingGui drawingGui) {
+    public void getGuiInstance(JFrame simulatorMain, JPanel schedulingGui, JPanel drawingGui) {
         schedulingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, schedulingGui));
         drawingGuiBtn.addActionListener(e -> Common.changePanel(simulatorMain, drawingGui));
     }

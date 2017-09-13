@@ -29,9 +29,9 @@ public class SimulatorMain extends JFrame {
     public SimulatorMain() {
         super("模拟多AGV场景");
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setExtendedState(Frame.MAXIMIZED_BOTH);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.addWindowListener(new WindowAdapter() {
@@ -68,9 +68,9 @@ public class SimulatorMain extends JFrame {
         dialog.setVisible(true);
         Object result = pane.getValue();
         if (result == null || result == option[1]) {
-            setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         } else if (result == option[0]) {
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         }
     }
 }
