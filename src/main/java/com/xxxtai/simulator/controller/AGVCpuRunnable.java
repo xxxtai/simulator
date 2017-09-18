@@ -33,10 +33,10 @@ public class AGVCpuRunnable implements Runnable {
             if ((recMessage = this.communicationModule.read()) != null) {
                 this.carModel.setLastCommunicationTime(System.currentTimeMillis());
 //				log.info("AGV receive message:"+recMessage);
-                if (recMessage.endsWith(Constant.ROUTE_SUFFIX)) {
+                if (recMessage.startsWith(Constant.ROUTE_PREFIX)) {
                     this.carModel.setCardCommandMap(Constant.getContent(recMessage));
                 }
-                if (recMessage.startsWith(Constant.PREFIX) && recMessage.endsWith(Constant.COMMAND_SUFFIX)) {
+                if (recMessage.endsWith(Constant.SUFFIX) && recMessage.startsWith(Constant.COMMAND_PREFIX)) {
                     String content = Constant.getContent(recMessage);
                     String[] c = content.split(Constant.SPLIT);
                     if (Integer.valueOf(c[0], 16) == 1) {
@@ -64,15 +64,15 @@ public class AGVCpuRunnable implements Runnable {
     }
 
     public void sendReadCardToSystem(int AGVNum, int cardNum) {
-        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(cardNum) + Constant.CARD_SUFFIX);
+        communicationModule.write(Constant.CARD_PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(cardNum) + Constant.SUFFIX);
     }
 
     public void sendStateToSystem(int AGVNum, int state){
-        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(state) + Constant.STATE_SUFFIX);
+        communicationModule.write(Constant.STATE_PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(state) + Constant.SUFFIX);
     }
 
     public void heartBeat(int AGVNum){
-        communicationModule.write(Constant.PREFIX + Integer.toHexString(AGVNum) + Constant.HEART_SUFFIX);
+        communicationModule.write(Constant.HEART_PREFIX + Integer.toHexString(AGVNum) + Constant.SUFFIX);
     }
 
 }

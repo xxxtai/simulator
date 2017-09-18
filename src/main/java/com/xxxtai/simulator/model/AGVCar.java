@@ -56,7 +56,6 @@ public class AGVCar implements Car{
         this.lastCommunicationTime = System.currentTimeMillis();
     }
 
-
     public void init(int AGVNum) {
         this.AGVNum = AGVNum;
         this.cardCommandMap = new HashMap<>();
@@ -330,6 +329,11 @@ public class AGVCar implements Car{
     @Override
     public boolean isOnEntrance() {
         return false;
+    }
+
+    @Override
+    public String getDestination() {
+        return null;
     }
 
     @Override

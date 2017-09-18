@@ -23,7 +23,7 @@ public class CommunicationModule {
         boolean isSuccess = false;
         try {
             log.info("ready to connect");
-            this.socket = new Socket("127.0.0.1", 8001);
+            this.socket = new Socket("127.0.0.1", 8899);
             printWriter = new PrintWriter(socket.getOutputStream());
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             isSuccess = true;

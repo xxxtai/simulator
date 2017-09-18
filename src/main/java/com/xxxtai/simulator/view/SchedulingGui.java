@@ -92,8 +92,8 @@ public class SchedulingGui extends JPanel {
                             fileNameDialog.setOnDialogListener((cityName, buttonState) -> {
                                 fileNameDialog.dispose();
                                 if (buttonState) {
-                                    printWriter.println(Constant.PREFIX + Integer.toHexString(selectCar.getAtEdge().cardNum) +
-                                            Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.QR_SUFFIX);
+                                    printWriter.println(Constant.QR_PREFIX + Integer.toHexString(selectCar.getAtEdge().cardNum) +
+                                            Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.SUFFIX);
                                     printWriter.flush();
                                 }
                             });
@@ -117,9 +117,9 @@ public class SchedulingGui extends JPanel {
         timer.start();
 
         try {
-            Socket socket = new Socket("127.0.0.1", 8001);
+            Socket socket = new Socket("127.0.0.1", 8899);
             printWriter = new PrintWriter(socket.getOutputStream());
-            printWriter.println(Constant.PREFIX + 0 + Constant.SPLIT + 0 + Constant.QR_SUFFIX);
+            printWriter.println(Constant.QR_PREFIX + 0 + Constant.SPLIT + 0 + Constant.SUFFIX);
             printWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
