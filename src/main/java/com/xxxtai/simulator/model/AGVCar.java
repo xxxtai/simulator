@@ -247,8 +247,7 @@ public class AGVCar implements Car{
 
     public void setCardCommandMap(String commandString) {
         String[] commandArray = commandString.split(Constant.SPLIT);
-//        log.info("commandArray:" + commandArray[commandArray.length - 1]);
-        stopCardNum = Integer.parseInt(commandArray[commandArray.length - 1], 16);
+        stopCardNum = graph.getSerialNumMap().get(commandArray[commandArray.length - 1]);
         for (int i = 0; i < commandArray.length - 1; i++) {
             String c0 = commandArray[i].substring(0, 8);
             String c1 = commandArray[i].substring(10, 12);

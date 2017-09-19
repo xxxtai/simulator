@@ -72,7 +72,7 @@ public class AGVCpuRunnable implements Runnable {
     }
 
     public void sendStateToSystem(int AGVNum, int state){
-        communicationModule.write(Constant.STATE_PREFIX + Integer.toHexString(AGVNum) + Constant.SPLIT + Integer.toHexString(state) + Constant.SUFFIX);
+        communicationModule.write(Constant.STATE_PREFIX + Integer.toHexString(state) + Constant.SUFFIX);
     }
 
     public void heartBeat(int AGVNum){
