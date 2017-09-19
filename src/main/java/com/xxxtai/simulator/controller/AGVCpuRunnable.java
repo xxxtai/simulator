@@ -1,5 +1,6 @@
 package com.xxxtai.simulator.controller;
 
+import com.xxxtai.express.model.Graph;
 import com.xxxtai.simulator.model.AGVCar;
 import com.xxxtai.express.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ public class AGVCpuRunnable implements Runnable {
     @Resource
     private CommunicationModule communicationModule;
 
+    @Resource
+    private Graph graph;
+
     private AGVCar carModel;
 
     public AGVCpuRunnable() {}
@@ -22,17 +26,17 @@ public class AGVCpuRunnable implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (System.currentTimeMillis() - this.carModel.getLastCommunicationTime() > 4500) {
+            if (System.currentTimeMillis() - this.carModel.getLastCommunicationTime() > 75000) {
                 this.communicationModule.releaseSource();
                 log.info("break//////////" + System.currentTimeMillis());
                 this.carModel.setNewCpuRunnable();
                 break;
             }
 
-            String recMessage;
-            if ((recMessage = this.communicationModule.read()) != null) {
+            String recMessage = communicationModule.inputStreamRead();
+            if (recMessage != null && recMessage.length() > 0) {
                 this.carModel.setLastCommunicationTime(System.currentTimeMillis());
-//				log.info("AGV receive message:"+recMessage);
+				log.info("AGV receive message99:"+recMessage);
                 if (recMessage.startsWith(Constant.ROUTE_PREFIX)) {
                     this.carModel.setCardCommandMap(Constant.getContent(recMessage));
                 }
@@ -64,11 +68,11 @@ public class AGVCpuRunnable implements Runnable {
     }
 
     public void sendReadCardToSystem(int AGVNum, int cardNum) {
-        communicationModule.write(Constant.CARD_PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(cardNum) + Constant.SUFFIX);
+        communicationModule.write(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
     }
 
     public void sendStateToSystem(int AGVNum, int state){
-        communicationModule.write(Constant.STATE_PREFIX + Integer.toHexString(AGVNum) + "/" + Integer.toHexString(state) + Constant.SUFFIX);
+        communicationModule.write(Constant.STATE_PREFIX + Integer.toHexString(AGVNum) + Constant.SPLIT + Integer.toHexString(state) + Constant.SUFFIX);
     }
 
     public void heartBeat(int AGVNum){

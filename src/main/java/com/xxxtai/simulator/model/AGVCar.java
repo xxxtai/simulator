@@ -65,7 +65,7 @@ public class AGVCar implements Car{
             this.cpuRunnable.heartBeat(AGVNum);
         }
 
-        setAtEdge(graph.getEdgeMap().get(113 + (AGVNum - 1)*2));
+        setAtEdge(graph.getEdgeMap().get(32 + AGVNum));
     }
 
     @Override
@@ -247,10 +247,12 @@ public class AGVCar implements Car{
 
     public void setCardCommandMap(String commandString) {
         String[] commandArray = commandString.split(Constant.SPLIT);
+//        log.info("commandArray:" + commandArray[commandArray.length - 1]);
         stopCardNum = Integer.parseInt(commandArray[commandArray.length - 1], 16);
         for (int i = 0; i < commandArray.length - 1; i++) {
-            String[] c = commandArray[i].split(Constant.SUB_SPLIT);
-            this.cardCommandMap.put(Integer.parseInt(c[0],16), Integer.parseInt(c[1],16));
+            String c0 = commandArray[i].substring(0, 8);
+            String c1 = commandArray[i].substring(10, 12);
+            this.cardCommandMap.put(graph.getSerialNumMap().get(c0), Integer.parseInt(c1,16));
         }
         this.state = State.FORWARD;
     }

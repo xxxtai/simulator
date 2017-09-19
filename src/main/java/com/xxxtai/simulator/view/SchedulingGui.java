@@ -110,7 +110,7 @@ public class SchedulingGui extends JPanel {
 
     public void init(ApplicationContext context) {
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 4; i++) {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(i).init(i + 1);
         }
