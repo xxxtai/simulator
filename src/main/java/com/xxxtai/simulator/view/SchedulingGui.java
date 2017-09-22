@@ -95,10 +95,12 @@ public class SchedulingGui extends JPanel {
                                     printWriter.println(Constant.QR_PREFIX + Integer.toHexString(selectCar.getAtEdge().cardNum) +
                                             Constant.SPLIT + Long.toHexString(City.valueOfName(cityName).getCode()) + Constant.SUFFIX);
                                     printWriter.flush();
+                                    System.out.println("sysout" + cityName);
                                 }
                             });
                         } else if (option.equals(OptionView.Option.UNLOADING)) {
                             ((AGVCpuRunnable)selectCar.getCommunicationRunnable()).sendStateToSystem(selectCar.getAGVNum(), State.UNLOADED.getValue());
+                            ((AGVCar)selectCar).finishedDuty();
                         }
                     });
                 }

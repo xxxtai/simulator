@@ -1,15 +1,13 @@
 package com.xxxtai.simulator.model;
 
-import com.xxxtai.express.constant.Command;
+import com.xxxtai.express.constant.*;
 import com.xxxtai.express.controller.CommunicationWithAGV;
 import com.xxxtai.express.controller.TrafficControl;
 import com.xxxtai.express.model.Car;
 import com.xxxtai.express.model.Edge;
+import com.xxxtai.express.model.Exit;
 import com.xxxtai.express.model.Graph;
 import com.xxxtai.simulator.controller.AGVCpuRunnable;
-import com.xxxtai.express.constant.Constant;
-import com.xxxtai.express.constant.Orientation;
-import com.xxxtai.express.constant.State;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -38,6 +36,8 @@ public class AGVCar implements Car{
     State state = State.STOP;
     private @Getter
     Edge atEdge;
+    private String destination;
+    private boolean onDuty;
     private boolean isFirstInquire = true;
     private int detectCardNum;
     private int lastDetectCardNum;
@@ -65,7 +65,7 @@ public class AGVCar implements Car{
             this.cpuRunnable.heartBeat(AGVNum);
         }
 
-        setAtEdge(graph.getEdgeMap().get(32 + AGVNum));
+        setAtEdge(graph.getEdgeMap().get(50 + AGVNum));
     }
 
     @Override
@@ -248,6 +248,17 @@ public class AGVCar implements Car{
     public void setCardCommandMap(String commandString) {
         String[] commandArray = commandString.split(Constant.SPLIT);
         stopCardNum = graph.getSerialNumMap().get(commandArray[commandArray.length - 1]);
+        onDuty = true;
+        for (Map.Entry<Long, List<Exit>> entry : graph.getExitMap().entrySet()) {
+            for (Exit exit : entry.getValue()){
+                for (int cardNum : exit.getExitNodeNums()){
+                    if (cardNum == stopCardNum){
+                        destination = City.valueOfCode(entry.getKey()).getName();
+                        break;
+                    }
+                }
+            }
+        }
         for (int i = 0; i < commandArray.length - 1; i++) {
             String c0 = commandArray[i].substring(0, 8);
             String c1 = commandArray[i].substring(10, 12);
@@ -274,6 +285,12 @@ public class AGVCar implements Car{
     public void startTheAGV() {
         this.state = State.FORWARD;
         this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
+    }
+
+    public void finishedDuty(){
+        onDuty = false;
+        destination = null;
+        stopCardNum = 0;
     }
 
     public Orientation getOrientation() {
@@ -324,7 +341,7 @@ public class AGVCar implements Car{
 
     @Override
     public boolean isOnDuty() {
-        return false;
+        return onDuty;
     }
 
     @Override
@@ -334,7 +351,7 @@ public class AGVCar implements Car{
 
     @Override
     public String getDestination() {
-        return null;
+        return destination;
     }
 
     @Override
