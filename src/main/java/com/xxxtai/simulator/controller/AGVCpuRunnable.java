@@ -67,7 +67,11 @@ public class AGVCpuRunnable implements Runnable {
     }
 
     public void sendReadCardToSystem(int AGVNum, int cardNum) {
-        communicationModule.write(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
+        if (Constant.USE_SERIAL) {
+            communicationModule.write(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
+        } else {
+            communicationModule.write(Constant.CARD_PREFIX  +  cardNum + Constant.SUFFIX);
+        }
     }
 
     public void sendStateToSystem(int AGVNum, int state){

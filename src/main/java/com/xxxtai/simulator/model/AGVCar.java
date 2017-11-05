@@ -247,7 +247,18 @@ public class AGVCar implements Car{
 
     public void setCardCommandMap(String commandString) {
         String[] commandArray = commandString.split(Constant.SPLIT);
-        stopCardNum = graph.getSerialNumMap().get(commandArray[commandArray.length - 1]);
+        String[] stopCardNumIsBackward = commandArray[commandArray.length - 1].split(Constant.SUB_SPLIT);
+        log.error(stopCardNumIsBackward[1] + " " + stopCardNumIsBackward[0]);
+        if (Constant.USE_SERIAL) {
+            stopCardNum = graph.getSerialNumMap().get(stopCardNumIsBackward[0]);
+        } else {
+            stopCardNum = Integer.parseInt(stopCardNumIsBackward[0]);
+        }
+
+        if (stopCardNumIsBackward[1].equals(Constant.BACKWARD)) {
+            turnAround();
+            this.atEdge = new Edge(this.atEdge.endNode, this.atEdge.startNode, this.atEdge.realDistance, this.atEdge.cardNum);
+        }
         onDuty = true;
         for (Map.Entry<Long, List<Exit>> entry : graph.getExitMap().entrySet()) {
             for (Exit exit : entry.getValue()){
@@ -260,11 +271,27 @@ public class AGVCar implements Car{
             }
         }
         for (int i = 0; i < commandArray.length - 1; i++) {
-            String c0 = commandArray[i].substring(0, 8);
-            String c1 = commandArray[i].substring(10, 12);
-            this.cardCommandMap.put(graph.getSerialNumMap().get(c0), Integer.parseInt(c1,16));
+            if (Constant.USE_SERIAL) {
+                this.cardCommandMap.put(graph.getSerialNumMap().get(commandArray[i].substring(0, 8)),
+                        Integer.parseInt(commandArray[i].substring(10, 12),16));
+            } else {
+                String[] c = commandArray[i].split(Constant.SUB_SPLIT);
+                this.cardCommandMap.put(Integer.parseInt(c[0]), Integer.parseInt(c[1],16));
+            }
         }
         this.state = State.FORWARD;
+    }
+
+    private void turnAround(){
+        if (this.orientation == Orientation.RIGHT) {
+            this.orientation = Orientation.LEFT;
+        } else if (this.orientation == Orientation.LEFT) {
+            this.orientation = Orientation.RIGHT;
+        } else if (this.orientation == Orientation.UP) {
+            this.orientation = Orientation.DOWN;
+        } else if (this.orientation == Orientation.DOWN) {
+            this.orientation = Orientation.UP;
+        }
     }
 
     public void changeState() {
@@ -352,6 +379,11 @@ public class AGVCar implements Car{
     @Override
     public String getDestination() {
         return destination;
+    }
+
+    @Override
+    public int getStopCardNum() {
+        return 0;
     }
 
     @Override
