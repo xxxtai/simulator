@@ -124,6 +124,8 @@ public class AGVCar implements Car{
             if (cardNum == this.stopCardNum) {
                 this.state = State.STOP;
                 this.cpuRunnable.sendStateToSystem(this.AGVNum, 2);
+                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
+                this.finishedDuty();
             }
             this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum);
         }
