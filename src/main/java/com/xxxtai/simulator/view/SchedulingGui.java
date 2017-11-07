@@ -38,6 +38,8 @@ public class SchedulingGui extends JPanel {
 
     private JLabel stateLabel;
 
+    private Timer heartBeat;
+
     @Resource
     private DrawingGraph drawingGraph;
 
@@ -120,7 +122,8 @@ public class SchedulingGui extends JPanel {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(i).init(i + 1);
         }
-        new Timer(50, new RepaintTimerListener()).start();
+        heartBeat = new Timer(50, new RepaintTimerListener());
+        heartBeat.start();
         new Timer(100, new DetectCollideTimerListener()).start();
 
         try {
@@ -168,6 +171,7 @@ public class SchedulingGui extends JPanel {
                         car1.setState(State.COLLIED);
                         car2.setState(State.COLLIED);
                         stateLabel.setText(car1.getAGVNum() + "AGV 和 " + car2.getAGVNum() + "AGV相撞");
+                        heartBeat.stop();
                     }
                 }
             }

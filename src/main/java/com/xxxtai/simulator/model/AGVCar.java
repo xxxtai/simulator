@@ -252,7 +252,6 @@ public class AGVCar implements Car{
     public void setCardCommandMap(String commandString) {
         String[] commandArray = commandString.split(Constant.SPLIT);
         String[] stopCardNumIsBackward = commandArray[commandArray.length - 1].split(Constant.SUB_SPLIT);
-        log.error(stopCardNumIsBackward[1] + " " + stopCardNumIsBackward[0]);
         if (Constant.USE_SERIAL) {
             stopCardNum = graph.getSerialNumMap().get(stopCardNumIsBackward[0]);
         } else {
