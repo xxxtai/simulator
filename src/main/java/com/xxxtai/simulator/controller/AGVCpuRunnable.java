@@ -1,5 +1,6 @@
 package com.xxxtai.simulator.controller;
 
+import com.xxxtai.express.constant.State;
 import com.xxxtai.express.model.Graph;
 import com.xxxtai.simulator.model.AGVCar;
 import com.xxxtai.express.constant.Constant;
@@ -43,9 +44,9 @@ public class AGVCpuRunnable implements Runnable {
                     String content = Constant.getContent(recMessage);
                     String[] c = content.split(Constant.SPLIT);
                     if (Integer.valueOf(c[0], 16) == 1) {
-                        this.carModel.startTheAGV();
+                        this.carModel.setState(State.FORWARD);
                     } else if (Integer.valueOf(c[0], 16) == 2) {
-                        this.carModel.stopTheAGV();
+                        this.carModel.setState(State.STOP);
                     }
                 }
             }

@@ -118,21 +118,22 @@ public class AGVCar implements Car{
 
         int cardNum = detectRFIDCard();
         if (cardNum != 0 && cardNum != this.detectCardNum) {
+            this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum);
             this.lastDetectCardNum = this.detectCardNum;
             this.detectCardNum = cardNum;
             log.info(this.AGVNum + "AGV detectRFIDCard:" + cardNum);
             if (cardNum == this.stopCardNum) {
                 this.state = State.STOP;
-                this.cpuRunnable.sendStateToSystem(this.AGVNum, 2);
+                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.STOP.getValue());
                 this.cpuRunnable.sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
                 this.finishedDuty();
             }
-            this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum);
         }
 
         if (this.finishEdge && this.isFirstInquire && this.cardCommandMap.get(this.lastDetectCardNum) != null) {
             if (!swerve(this.cardCommandMap.get(this.lastDetectCardNum))) {
                 this.state = State.STOP;
+                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.STOP.getValue());
             } else {
                 this.cardCommandMap.remove(this.lastDetectCardNum);
             }
@@ -229,6 +230,7 @@ public class AGVCar implements Car{
         if (isFound) {
             this.isFirstInquire = true;
             this.state = State.FORWARD;
+            this.cpuRunnable.sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
         }
         return isFound;
     }
@@ -282,6 +284,7 @@ public class AGVCar implements Car{
             }
         }
         this.state = State.FORWARD;
+        this.cpuRunnable.sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
     }
 
     private void turnAround(){
@@ -294,26 +297,6 @@ public class AGVCar implements Car{
         } else if (this.orientation == Orientation.DOWN) {
             this.orientation = Orientation.UP;
         }
-    }
-
-    public void changeState() {
-        if (this.state == State.FORWARD || this.state == State.BACKWARD) {
-            this.cpuRunnable.sendStateToSystem(AGVNum, State.STOP.getValue());
-            this.state = State.STOP;
-        } else if (this.state == State.STOP) {
-            this.state = State.FORWARD;
-            this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
-        }
-    }
-
-    public void stopTheAGV() {
-        this.state = State.STOP;
-        this.cpuRunnable.sendStateToSystem(AGVNum, State.STOP.getValue());
-    }
-
-    public void startTheAGV() {
-        this.state = State.FORWARD;
-        this.cpuRunnable.sendStateToSystem(AGVNum, State.FORWARD.getValue());
     }
 
     public void finishedDuty(){
@@ -359,6 +342,12 @@ public class AGVCar implements Car{
     }
 
     @Override
+    public void setState(State state) {
+        this.state =state;
+        this.cpuRunnable.sendStateToSystem(AGVNum, state.getValue());
+    }
+
+    @Override
     public TrafficControl getTrafficControl() {
         return null;
     }
@@ -389,13 +378,13 @@ public class AGVCar implements Car{
     }
 
     @Override
+    public void setExecutiveCommand(Command command) {}
+
+    @Override
     public void setCommunicationWithAGV(CommunicationWithAGV communicationWithAGV) {}
 
     @Override
     public void sendMessageToAGV(String s) {}
-
-    @Override
-    public void setState(int i) {}
 
     @Override
     public void setRouteNodeNumArray(List<Integer> list) {}

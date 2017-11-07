@@ -36,12 +36,12 @@ public class SchedulingGui extends JPanel {
 
     private PrintWriter printWriter;
 
+    private JLabel stateLabel;
+
     @Resource
     private DrawingGraph drawingGraph;
 
     private ArrayList<Car> AGVArray;
-
-    private Timer timer;
 
     private Car selectCar;
 
@@ -58,9 +58,10 @@ public class SchedulingGui extends JPanel {
         drawingGuiBtn = new RoundButton("制图界面");
         drawingGuiBtn.setBounds(2 * screenSize.width / 3, 0, screenSize.width / 3, screenSize.height / 20);
 
-        JLabel stateLabel = new JLabel();
-        stateLabel.setBounds(0, 22 * screenSize.height / 25, screenSize.width, screenSize.height / 25);
-        stateLabel.setFont(new Font("宋体", Font.BOLD, 25));
+        stateLabel = new JLabel();
+        stateLabel.setBounds(0, 24 * screenSize.height / 26, screenSize.width, screenSize.height / 26);
+        stateLabel.setFont(new Font("宋体", Font.BOLD, 20));
+        stateLabel.setForeground(Color.RED);
 
         this.setLayout(null);
         this.add(schedulingGuiBtn);
@@ -73,7 +74,11 @@ public class SchedulingGui extends JPanel {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     for (Car car : AGVArray) {
                         if (Math.abs(e.getX() - car.getX()) < 40 && Math.abs(e.getY() - car.getY()) < 40) {
-                            ((AGVCar)car).changeState();
+                            if (car.getState() == State.FORWARD || (car.getState() == State.BACKWARD)) {
+                                car.setState(State.STOP);
+                            } else if (car.getState() == State.STOP) {
+                                car.setState(State.FORWARD);
+                            }
                         }
                     }
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -107,7 +112,6 @@ public class SchedulingGui extends JPanel {
             }
         });
         AGVArray = new ArrayList<>();
-        timer = new Timer(50, new RepaintTimerListener());
     }
 
     public void init(ApplicationContext context) {
@@ -116,7 +120,8 @@ public class SchedulingGui extends JPanel {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(i).init(i + 1);
         }
-        timer.start();
+        new Timer(50, new RepaintTimerListener()).start();
+        new Timer(100, new DetectCollideTimerListener()).start();
 
         try {
             Socket socket = new Socket("127.0.0.1", 8899);
@@ -139,10 +144,32 @@ public class SchedulingGui extends JPanel {
         public void actionPerformed(ActionEvent e) {
             repaint();
             for (Car car : AGVArray) {
-                if (((AGVCar)car).getState().equals(State.FORWARD)) {
+                if (car.getState().equals(State.FORWARD)) {
                     car.stepByStep();
                 }
                 car.heartBeat();
+            }
+        }
+    }
+
+    class DetectCollideTimerListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            for (int i = 0; i < AGVArray.size(); i++) {
+                AGVCar car1 = (AGVCar) AGVArray.get(i);
+                if (!car1.isOnDuty()) {
+                    continue;
+                }
+                for (int j = i + 1; j < AGVArray.size(); j++) {
+                    AGVCar car2 = (AGVCar) AGVArray.get(j);
+                    if (!car2.isOnDuty()) {
+                        continue;
+                    }
+                    if ((Math.abs(car1.getX() - car2.getX()) + Math.abs(car1.getY() - car2.getY())) < 60) {
+                        car1.setState(State.COLLIED);
+                        car2.setState(State.COLLIED);
+                        stateLabel.setText(car1.getAGVNum() + "AGV 和 " + car2.getAGVNum() + "AGV相撞");
+                    }
+                }
             }
         }
     }
