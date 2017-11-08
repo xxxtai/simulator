@@ -56,7 +56,7 @@ public class AGVCar implements Car{
         this.lastCommunicationTime = System.currentTimeMillis();
     }
 
-    public void init(int AGVNum) {
+    public void init(int AGVNum, int positionCardNum) {
         this.AGVNum = AGVNum;
         this.cardCommandMap = new HashMap<>();
         this.cpuRunnable.setCarModelToCpu(this);
@@ -65,7 +65,7 @@ public class AGVCar implements Car{
             this.cpuRunnable.heartBeat(AGVNum);
         }
 
-        setAtEdge(graph.getEdgeMap().get(50 + AGVNum));
+        setAtEdge(graph.getEdgeMap().get(positionCardNum));
     }
 
     @Override

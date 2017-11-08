@@ -1,9 +1,9 @@
 package com.xxxtai.simulator.view;
 
 import com.xxxtai.express.model.Car;
+import com.xxxtai.express.model.Graph;
 import com.xxxtai.express.view.DrawingGraph;
 import com.xxxtai.simulator.model.AGVCar;
-import com.xxxtai.express.constant.Constant;
 import com.xxxtai.express.constant.State;
 import com.xxxtai.express.view.RoundButton;
 import org.springframework.context.ApplicationContext;
@@ -14,11 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Component
@@ -33,6 +31,9 @@ public class SchedulingGui extends JPanel {
 
     @Resource
     private DrawingGraph drawingGraph;
+
+    @Resource
+    private Graph graph;
 
     private List<Car> AGVArray;
 
@@ -69,9 +70,9 @@ public class SchedulingGui extends JPanel {
 
     public void init(ApplicationContext context) {
 
-        for (int i = 0; i < 5; i++) {
+        for (Map.Entry<Integer, Integer> entry : graph.getAGVSPosition().entrySet()) {
             AGVArray.add(context.getBean(AGVCar.class));
-            AGVArray.get(i).init(i + 1);
+            AGVArray.get(AGVArray.size() - 1).init(entry.getKey(), entry.getValue());
         }
         heartBeat = new Timer(50, new RepaintTimerListener());
         heartBeat.start();
