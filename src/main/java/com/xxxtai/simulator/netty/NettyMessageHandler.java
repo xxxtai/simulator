@@ -28,9 +28,7 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
             IdleStateEvent e = (IdleStateEvent) evt;
             switch (e.state()) {
                 case WRITER_IDLE:
-//                    PingMsg pingMsg=new PingMsg();
-//                    ctx.writeAndFlush(pingMsg);
-                    System.out.println("send ping to server----------");
+                    log.info(this.car.getAGVNum() + "AGV send ping to server----------");
                     break;
                 default:
                     break;
@@ -44,6 +42,7 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
         if (msg != null && msg.length() > 0) {
             this.car.setLastCommunicationTime(System.currentTimeMillis());
             if (msg.startsWith(Constant.ROUTE_PREFIX)) {
+                log.info(this.car.getAGVNum() + "AGV route:" + msg);
                 ((AGVCar) car).setCardCommandMap(Constant.getContent(msg));
             }
             if (msg.endsWith(Constant.SUFFIX) && msg.startsWith(Constant.COMMAND_PREFIX)) {
@@ -51,8 +50,10 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
                 String[] c = content.split(Constant.SPLIT);
                 if (Integer.valueOf(c[0], 16) == 1) {
                     this.car.setState(State.FORWARD);
+                    log.info("让" + this.car.getAGVNum() + "AGV前进");
                 } else if (Integer.valueOf(c[0], 16) == 2) {
                     this.car.setState(State.STOP);
+                    log.info("让" + this.car.getAGVNum() + "AGV停止");
                 }
             }
         }
