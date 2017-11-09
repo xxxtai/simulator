@@ -1,13 +1,13 @@
 package com.xxxtai.simulator.model;
 
 import com.xxxtai.express.constant.*;
-import com.xxxtai.express.controller.CommunicationWithAGV;
 import com.xxxtai.express.controller.TrafficControl;
 import com.xxxtai.express.model.Car;
 import com.xxxtai.express.model.Edge;
 import com.xxxtai.express.model.Exit;
 import com.xxxtai.express.model.Graph;
-import com.xxxtai.simulator.controller.AGVCpuRunnable;
+import com.xxxtai.simulator.netty.NettyClientBootstrap;
+import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -19,8 +19,6 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -29,7 +27,6 @@ public class AGVCar implements Car{
     private @Getter
     int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
-    private ExecutorService executor;
     private Point position;
     private boolean finishEdge;
     private @Getter
@@ -46,12 +43,11 @@ public class AGVCar implements Car{
     private long lastCommunicationTime;
     private long count_3s;
     @Resource
-    private AGVCpuRunnable cpuRunnable;
-    @Resource
     private Graph graph;
 
+    private SocketChannel socketChannel;
+
     public AGVCar() {
-        this.executor = Executors.newSingleThreadExecutor();
         this.position = new Point(-100, -100);
         this.lastCommunicationTime = System.currentTimeMillis();
     }
@@ -59,13 +55,15 @@ public class AGVCar implements Car{
     public void init(int AGVNum, int positionCardNum) {
         this.AGVNum = AGVNum;
         this.cardCommandMap = new HashMap<>();
-        this.cpuRunnable.setCarModelToCpu(this);
-        if (this.cpuRunnable.connect()) {
-            this.executor.execute(this.cpuRunnable);
-            this.cpuRunnable.heartBeat(AGVNum);
-        }
-
         setAtEdge(graph.getEdgeMap().get(positionCardNum));
+
+        try {
+            NettyClientBootstrap bootstrap = new NettyClientBootstrap(8899, "127.0.0.1", this);
+            socketChannel = bootstrap.start();
+            heartBeat(AGVNum);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -118,14 +116,14 @@ public class AGVCar implements Car{
 
         int cardNum = detectRFIDCard();
         if (cardNum != 0 && cardNum != this.detectCardNum) {
-            this.cpuRunnable.sendReadCardToSystem(this.AGVNum, cardNum);
+            sendReadCardToSystem(this.AGVNum, cardNum);
             this.lastDetectCardNum = this.detectCardNum;
             this.detectCardNum = cardNum;
             log.info(this.AGVNum + "AGV detectRFIDCard:" + cardNum);
             if (cardNum == this.stopCardNum) {
                 this.state = State.STOP;
-                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.STOP.getValue());
-                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
+                sendStateToSystem(this.AGVNum, State.STOP.getValue());
+                sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
                 this.finishedDuty();
             }
         }
@@ -133,7 +131,7 @@ public class AGVCar implements Car{
         if (this.finishEdge && this.isFirstInquire && this.cardCommandMap.get(this.lastDetectCardNum) != null) {
             if (!swerve(this.cardCommandMap.get(this.lastDetectCardNum))) {
                 this.state = State.STOP;
-                this.cpuRunnable.sendStateToSystem(this.AGVNum, State.STOP.getValue());
+                sendStateToSystem(this.AGVNum, State.STOP.getValue());
             } else {
                 this.cardCommandMap.remove(this.lastDetectCardNum);
             }
@@ -143,7 +141,7 @@ public class AGVCar implements Car{
     public void heartBeat() {
         if (this.count_3s == 60) {
             this.count_3s = 0;
-            this.cpuRunnable.heartBeat(this.AGVNum);
+            heartBeat(this.AGVNum);
         } else {
             this.count_3s++;
         }
@@ -230,7 +228,7 @@ public class AGVCar implements Car{
         if (isFound) {
             this.isFirstInquire = true;
             this.state = State.FORWARD;
-            this.cpuRunnable.sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
+            sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
         }
         return isFound;
     }
@@ -283,7 +281,7 @@ public class AGVCar implements Car{
             }
         }
         this.state = State.FORWARD;
-        this.cpuRunnable.sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
+        sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
     }
 
     private void turnAround(){
@@ -316,18 +314,20 @@ public class AGVCar implements Car{
         this.lastCommunicationTime = time;
     }
 
-    @Override
-    public Runnable getCommunicationRunnable() {
-        return cpuRunnable;
+    private void sendReadCardToSystem(int AGVNum, int cardNum) {
+        if (Constant.USE_SERIAL) {
+            this.socketChannel.writeAndFlush(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
+        } else {
+            this.socketChannel.writeAndFlush(Constant.CARD_PREFIX  +  cardNum + Constant.SUFFIX);
+        }
     }
 
-    public void setNewCpuRunnable() {
-        this.cpuRunnable = new AGVCpuRunnable();
-        this.cpuRunnable.setCarModelToCpu(this);
-        if (this.cpuRunnable.connect()) {
-            this.executor.execute(this.cpuRunnable);
-            this.cpuRunnable.sendStateToSystem(AGVNum, 2);
-        }
+    private void sendStateToSystem(int AGVNum, int state){
+        this.socketChannel.writeAndFlush(Constant.STATE_PREFIX + Integer.toHexString(state) + Constant.SUFFIX);
+    }
+
+    private void heartBeat(int AGVNum){
+        this.socketChannel.writeAndFlush(Constant.HEART_PREFIX + Integer.toHexString(AGVNum) + Constant.SUFFIX);
     }
 
     @Override
@@ -341,9 +341,19 @@ public class AGVCar implements Car{
     }
 
     @Override
+    public void setSocketChannel(SocketChannel socketChannel) {
+        this.socketChannel = socketChannel;
+    }
+
+    @Override
+    public SocketChannel getSocketChannel() {
+        return this.socketChannel;
+    }
+
+    @Override
     public void setState(State state) {
         this.state =state;
-        this.cpuRunnable.sendStateToSystem(AGVNum, state.getValue());
+        sendStateToSystem(AGVNum, state.getValue());
     }
 
     @Override
@@ -378,9 +388,6 @@ public class AGVCar implements Car{
 
     @Override
     public void setExecutiveCommand(Command command) {}
-
-    @Override
-    public void setCommunicationWithAGV(CommunicationWithAGV communicationWithAGV) {}
 
     @Override
     public void sendMessageToAGV(String s) {}
