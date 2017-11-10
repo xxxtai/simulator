@@ -180,7 +180,7 @@ public class AGVCar implements Car{
                         || (orientation == Orientation.DOWN && e.startNode.x == e.endNode.x && e.startNode.y > e.endNode.y)
                         || (orientation == Orientation.LEFT && e.startNode.y == e.endNode.y && e.startNode.x < e.endNode.x)
                         || (orientation == Orientation.UP && e.startNode.x == e.endNode.x && e.startNode.y < e.endNode.y)) {
-                    setAtEdge(new Edge(e.endNode, e.startNode, e.realDistance, e.cardNum));
+                    setAtEdge(new Edge(e.endNode, e.startNode, graph.getNodeMap().get(e.cardNum), e.realDistance));
                     isFound = true;
                     break;
                 }
@@ -258,7 +258,7 @@ public class AGVCar implements Car{
 
         if (stopCardNumIsBackward[1].equals(Constant.BACKWARD)) {
             turnAround();
-            this.atEdge = new Edge(this.atEdge.endNode, this.atEdge.startNode, this.atEdge.realDistance, this.atEdge.cardNum);
+            this.atEdge = new Edge(this.atEdge.endNode, this.atEdge.startNode, graph.getNodeMap().get(this.atEdge.cardNum), this.atEdge.realDistance);
         }
         onDuty = true;
         for (Map.Entry<Long, List<Exit>> entry : graph.getExitMap().entrySet()) {

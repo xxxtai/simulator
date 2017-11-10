@@ -126,7 +126,7 @@ public class SchedulingGui extends JPanel {
                         car1.setState(State.COLLIED);
                         car2.setState(State.COLLIED);
                         stateLabel.setText(car1.getAGVNum() + "AGV 和 " + car2.getAGVNum() + "AGV相撞");
-                        heartBeat.stop();
+                        stopAGVS = true;
                     }
                 }
             }
