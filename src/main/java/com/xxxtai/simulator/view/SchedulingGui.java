@@ -1,6 +1,8 @@
 package com.xxxtai.simulator.view;
 
+import com.xxxtai.express.constant.Orientation;
 import com.xxxtai.express.model.Car;
+import com.xxxtai.express.model.Edge;
 import com.xxxtai.express.model.Graph;
 import com.xxxtai.express.view.DrawingGraph;
 import com.xxxtai.simulator.model.AGVCar;
@@ -32,7 +34,11 @@ public class SchedulingGui extends JPanel {
 
     private boolean stopAGVS;
 
-    private boolean showNums;
+    private boolean showNums = true;
+
+    private int entranceBorder1;
+
+    private int entranceBorder2;
 
     @Resource
     private DrawingGraph drawingGraph;
@@ -79,8 +85,18 @@ public class SchedulingGui extends JPanel {
     }
 
     public void init(ApplicationContext context) {
-        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x)/2 - 30;
+        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x)/2 - 20;
         log.info("safeDistance:" + safeDistance);
+        if (!graph.getEntranceMap().isEmpty()) {
+            Edge edge = graph.getEdgeMap().get(graph.getEntranceMap().keySet().iterator().next());
+            if (edge.startNode.x > edge.endNode.x) {
+                this.entranceBorder1 = edge.endNode.x;
+                this.entranceBorder2 = edge.startNode.x;
+            } else {
+                this.entranceBorder1 = edge.startNode.x;
+                this.entranceBorder2 = edge.endNode.x;
+            }
+        }
         for (Map.Entry<Integer, Integer> entry : graph.getAGVSPosition().entrySet()) {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(AGVArray.size() - 1).init(entry.getKey(), entry.getValue());
@@ -115,12 +131,12 @@ public class SchedulingGui extends JPanel {
         public void actionPerformed(ActionEvent e) {
             for (int i = 0; i < AGVArray.size(); i++) {
                 AGVCar car1 = (AGVCar) AGVArray.get(i);
-                if (!car1.isOnDuty()) {
+                if (!car1.isOnDuty() || (car1.getX() > entranceBorder1 && car1.getX() < entranceBorder2)) {
                     continue;
                 }
                 for (int j = i + 1; j < AGVArray.size(); j++) {
                     AGVCar car2 = (AGVCar) AGVArray.get(j);
-                    if (!car2.isOnDuty()) {
+                    if (!car2.isOnDuty() || (car2.getX() > entranceBorder1 && car2.getX() < entranceBorder2)) {
                         continue;
                     }
                     if ((Math.abs(car1.getX() - car2.getX()) + Math.abs(car1.getY() - car2.getY())) < safeDistance) {
@@ -129,6 +145,34 @@ public class SchedulingGui extends JPanel {
                         stateLabel.setText(car1.getAGVNum() + "AGV 和 " + car2.getAGVNum() + "AGV相撞");
                         stopAGVS = true;
                     }
+                }
+            }
+
+            for (int i = 0; i < AGVArray.size(); i++) {
+                boolean detected = false;
+                AGVCar car1 = (AGVCar) AGVArray.get(i);
+                if (car1.getX() < entranceBorder1 && car1.getX() > entranceBorder2) {
+                    continue;
+                }
+                for (int j = 0; j < AGVArray.size(); j++) {
+                    AGVCar car2 = (AGVCar) AGVArray.get(j);
+                    if (i == j || (car2.getX() < entranceBorder1 && car2.getX() > entranceBorder2) ||
+                            car2.getY() != car1.getY()) {
+                        continue;
+                    }
+                    if (Math.abs(car1.getX() - car2.getX()) < safeDistance) {
+                        if (car1.getOrientation().equals(Orientation.RIGHT) && car1.getX() < car2.getX()) {
+                            detected = true;
+                        } else if(car1.getOrientation().equals(Orientation.LEFT) && car1.getX() > car2.getX()){
+                            detected = true;
+                        }
+                    }
+                }
+                if (detected && car1.getState().equals(State.FORWARD)) {
+                    car1.setState(State.INFRARED_ANOMALY);
+                    stateLabel.setText(car1.getAGVNum() + "AGV红外异常");
+                } else if (!detected && car1.getState().equals(State.INFRARED_ANOMALY)){
+                    car1.setState(State.FORWARD);
                 }
             }
         }
