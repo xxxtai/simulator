@@ -21,7 +21,13 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
     public NettyMessageHandler(Car car){
         this.car = car;
     }
-    
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.info(this.car.getAGVNum() + "AGV inactive!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        this.car.setSocketChannel(null);
+    }
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
@@ -37,7 +43,7 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
     }
     @Override
     protected void messageReceived(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
-//        log.info(msg);
+        log.info(msg);
 
         if (msg != null && msg.length() > 0) {
             this.car.setLastCommunicationTime(System.currentTimeMillis());

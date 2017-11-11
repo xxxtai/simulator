@@ -79,7 +79,8 @@ public class SchedulingGui extends JPanel {
     }
 
     public void init(ApplicationContext context) {
-        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x)/2 - 10;
+        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x)/2 - 30;
+        log.info("safeDistance:" + safeDistance);
         for (Map.Entry<Integer, Integer> entry : graph.getAGVSPosition().entrySet()) {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(AGVArray.size() - 1).init(entry.getKey(), entry.getValue());
