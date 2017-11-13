@@ -280,8 +280,8 @@ public class AGVCar implements Car{
                 this.cardCommandMap.put(Integer.parseInt(c[0]), Integer.parseInt(c[1],16));
             }
         }
-        this.state = State.FORWARD;
-        sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
+//        this.state = State.FORWARD;
+//        sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
     }
 
     private void turnAround(){
