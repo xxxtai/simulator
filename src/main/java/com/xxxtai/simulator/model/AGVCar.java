@@ -2,10 +2,7 @@ package com.xxxtai.simulator.model;
 
 import com.xxxtai.express.constant.*;
 import com.xxxtai.express.controller.TrafficControl;
-import com.xxxtai.express.model.Car;
-import com.xxxtai.express.model.Edge;
-import com.xxxtai.express.model.Exit;
-import com.xxxtai.express.model.Graph;
+import com.xxxtai.express.model.*;
 import com.xxxtai.simulator.netty.NettyClientBootstrap;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
@@ -125,6 +122,10 @@ public class AGVCar implements Car{
                 sendStateToSystem(this.AGVNum, State.STOP.getValue());
                 sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
                 this.finishedDuty();
+                Entrance entrance = this.graph.getEntranceMap().get(cardNum);
+                if (entrance != null) {
+                    entrance.missionCountIncrease();
+                }
             }
         }
 
