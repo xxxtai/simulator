@@ -5,44 +5,43 @@ import com.xxxtai.express.constant.State;
 import com.xxxtai.express.model.Car;
 import com.xxxtai.express.model.Graph;
 import com.xxxtai.simulator.model.AGVCar;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
+@Sharable
 @Slf4j(topic = "develop")
-public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
+public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
     @Resource
     private Graph graph;
     private Car car;
-    
-    public NettyMessageHandler(Car car){
+
+    public HeartBeatClientHandler(Car car){
         this.car = car;
+    }
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("激活时间是："+new Date());
+        System.out.println("HeartBeatClientHandler channelActive");
+        ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info(this.car.getAGVNum() + "AGV inactive!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        this.car.setSocketChannel(null);
+        System.out.println("停止时间是："+new Date());
+        System.out.println("HeartBeatClientHandler channelInactive");
     }
 
+
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent e = (IdleStateEvent) evt;
-            switch (e.state()) {
-                case WRITER_IDLE:
-                    log.info(this.car.getAGVNum() + "AGV send ping to server----------");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    @Override
-    protected void messageReceived(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
+        String msg = (String) message;
         log.info(msg);
 
         if (msg != null && msg.length() > 0) {
@@ -63,5 +62,6 @@ public class NettyMessageHandler extends SimpleChannelInboundHandler<String> {
                 }
             }
         }
+        ReferenceCountUtil.release(msg);
     }
 }
