@@ -57,7 +57,7 @@ public class AGVCar implements Car{
         try {
             NettyClientBootstrap bootstrap = new NettyClientBootstrap(8899, "127.0.0.1", this);
             try {
-                socketChannel = bootstrap.start();
+                socketChannel = bootstrap.connect();
             } catch (Exception e) {
                 e.printStackTrace();
             }

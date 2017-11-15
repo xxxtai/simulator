@@ -122,7 +122,6 @@ public class SchedulingGui extends JPanel {
                         car.stepByStep();
                     }
                 }
-                car.heartBeat();
             }
         }
     }
