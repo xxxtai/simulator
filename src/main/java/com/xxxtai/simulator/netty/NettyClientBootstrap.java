@@ -34,44 +34,20 @@ public class NettyClientBootstrap {
         this.car = car;
     }
 
-    public SocketChannel start() throws InterruptedException {
-        EventLoopGroup eventLoopGroup=new NioEventLoopGroup();
-        Bootstrap bootstrap=new Bootstrap();
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.option(ChannelOption.SO_KEEPALIVE,true);
-        bootstrap.group(eventLoopGroup);
-        bootstrap.remoteAddress(host,port);
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel socketChannel) throws Exception {
-                socketChannel.pipeline().addLast(new IdleStateHandler(20,10,0));
-                socketChannel.pipeline().addLast(new ObjectEncoder());
-                socketChannel.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
-                socketChannel.pipeline().addLast(new HeartBeatClientHandler(car));
-            }
-        });
-        ChannelFuture future =bootstrap.connect(host,port).sync();
-        if (future.isSuccess()) {
-            socketChannel = (SocketChannel)future.channel();
-            log.info(car.getAGVNum() + "AGV connect server  成功---------");
-        }
-        return socketChannel;
-    }
-
     public SocketChannel connect() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         boot = new Bootstrap();
         boot.group(group).channel(NioSocketChannel.class).handler(new LoggingHandler(LogLevel.INFO));
 
-        final ConnectionWatchdog watchdog = new ConnectionWatchdog(boot, timer, port,host, true) {
+        final ConnectionWatchdog watchdog = new ConnectionWatchdog(boot, timer, port,host, car.getAGVNum(),true) {
 
             public ChannelHandler[] handlers() {
                 return new ChannelHandler[] {
                         this,
                         new IdleStateHandler(0, 4, 0, TimeUnit.SECONDS),
                         idleStateTrigger,
-                        new ObjectEncoder(),
-                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                        new StringDecoder(),
+                        new StringEncoder(),
                         new HeartBeatClientHandler(car)
                 };
             }

@@ -4,6 +4,7 @@ import com.xxxtai.express.constant.*;
 import com.xxxtai.express.controller.TrafficControl;
 import com.xxxtai.express.model.*;
 import com.xxxtai.simulator.netty.NettyClientBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -321,18 +322,34 @@ public class AGVCar implements Car{
 
     private void sendReadCardToSystem(int AGVNum, int cardNum) {
         if (Constant.USE_SERIAL) {
-            this.socketChannel.writeAndFlush(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
+            writeAndFlush(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
         } else {
-            this.socketChannel.writeAndFlush(Constant.CARD_PREFIX  +  cardNum + Constant.SUFFIX);
+            writeAndFlush(Constant.CARD_PREFIX  +  cardNum + Constant.SUFFIX);
         }
     }
 
     private void sendStateToSystem(int AGVNum, int state){
-        this.socketChannel.writeAndFlush(Constant.STATE_PREFIX + Integer.toHexString(state) + Constant.SUFFIX);
+        writeAndFlush(Constant.STATE_PREFIX + Integer.toHexString(state) + Constant.SUFFIX);
     }
 
     private void heartBeat(int AGVNum){
-        this.socketChannel.writeAndFlush(Constant.HEART_PREFIX + Integer.toHexString(AGVNum) + Constant.SUFFIX);
+        writeAndFlush(Constant.HEART_PREFIX + Integer.toHexString(AGVNum) + Constant.SUFFIX);
+    }
+
+    private void writeAndFlush(String message){
+        if (this.socketChannel != null) {
+            ChannelFuture channelFuture = null;
+            try {
+                channelFuture = this.socketChannel.writeAndFlush(message).sync();
+            } catch (InterruptedException e) {
+                log.info(this.getAGVNum() + "AGV writeAndFlush InterruptedException:",e);
+            }
+            if (channelFuture == null || !channelFuture.isSuccess()) {
+                log.info(this.getAGVNum() + "AGV writeAndFlush message:" + message + " failed 失败，！！！！！！！！！！！！！！！！！！！！！！！！");
+            }
+        } else {
+            log.info(this.getAGVNum() + "AGV socketChannel null message:" + message+ "  ！！！！！！！！！！！！！！！！！！！！！！！！！");
+        }
     }
 
     @Override
