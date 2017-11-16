@@ -39,7 +39,7 @@ public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
         String msg = (String) message;
-        log.info(msg);
+        log.debug(msg);
 
         String[] contents = msg.split(Constant.SUFFIX);
         for (String content : contents) {
