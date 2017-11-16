@@ -123,9 +123,7 @@ public class AGVCar implements Car{
             this.detectCardNum = cardNum;
             log.info(this.AGVNum + "AGV detectRFIDCard:" + cardNum);
             if (cardNum == this.stopCardNum) {
-                this.state = State.STOP;
-                sendStateToSystem(this.AGVNum, State.STOP.getValue());
-                sendStateToSystem(this.AGVNum, State.UNLOADED.getValue());
+                setState(State.UNLOADED);
                 this.finishedDuty();
                 Entrance entrance = this.graph.getEntranceMap().get(cardNum);
                 if (entrance != null) {
@@ -136,21 +134,16 @@ public class AGVCar implements Car{
 
         if (this.finishEdge && this.isFirstInquire && this.cardCommandMap.get(this.lastDetectCardNum) != null) {
             if (!swerve(this.cardCommandMap.get(this.lastDetectCardNum))) {
-                this.state = State.STOP;
-                sendStateToSystem(this.AGVNum, State.STOP.getValue());
+                log.info(this.getAGVNum() + "AGV 模拟循迹，无路可走！！！！！！！！！！！！！！！！！！！！！！！！！");
             } else {
                 this.cardCommandMap.remove(this.lastDetectCardNum);
             }
         }
     }
 
-    public void heartBeat() {
-        if (this.count_3s == 60) {
-            this.count_3s = 0;
-            heartBeat(this.AGVNum);
-        } else {
-            this.count_3s++;
-        }
+    @Override
+    public Command getExecutiveCommand() {
+        return null;
     }
 
     private void judgeOrientation() {
@@ -233,8 +226,6 @@ public class AGVCar implements Car{
         }
         if (isFound) {
             this.isFirstInquire = true;
-            this.state = State.FORWARD;
-            sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
         }
         return isFound;
     }
@@ -286,8 +277,6 @@ public class AGVCar implements Car{
                 this.cardCommandMap.put(Integer.parseInt(c[0]), Integer.parseInt(c[1],16));
             }
         }
-//        this.state = State.FORWARD;
-//        sendStateToSystem(this.AGVNum, State.FORWARD.getValue());
     }
 
     private void turnAround(){
@@ -346,6 +335,8 @@ public class AGVCar implements Car{
             }
             if (channelFuture == null || !channelFuture.isSuccess()) {
                 log.info(this.getAGVNum() + "AGV writeAndFlush message:" + message + " failed 失败，！！！！！！！！！！！！！！！！！！！！！！！！");
+            } else {
+                log.debug(this.getAGVNum() + "AGV simulator send message " + message);
             }
         } else {
             log.info(this.getAGVNum() + "AGV socketChannel null message:" + message+ "  ！！！！！！！！！！！！！！！！！！！！！！！！！");
@@ -374,8 +365,11 @@ public class AGVCar implements Car{
 
     @Override
     public void setState(State state) {
-        this.state = state;
-        sendStateToSystem(AGVNum, this.state.getValue());
+        if (!state.equals(this.state)) {
+            log.info("让" + this.getAGVNum() + "AGV" + state.getDescription());
+            this.state = state;
+            sendStateToSystem(AGVNum, this.state.getValue());
+        }
     }
 
     @Override

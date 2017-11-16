@@ -39,7 +39,7 @@ public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
         String msg = (String) message;
-        log.debug(msg);
+        log.debug(this.car.getAGVNum() + "AGV rec：" + msg);
 
         String[] contents = msg.split(Constant.SUFFIX);
         for (String content : contents) {
@@ -51,10 +51,8 @@ public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
                 String[] c = content.substring(Constant.FIX_LENGTH, content.length()).split(Constant.SPLIT);
                 if (Integer.valueOf(c[0], 16) == 1) {
                     this.car.setState(State.FORWARD);
-                    log.info("让" + this.car.getAGVNum() + "AGV前进");
                 } else if (Integer.valueOf(c[0], 16) == 2) {
                     this.car.setState(State.STOP);
-                    log.info("让" + this.car.getAGVNum() + "AGV停止");
                 }
             }
         }
