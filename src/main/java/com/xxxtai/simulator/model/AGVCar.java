@@ -374,8 +374,10 @@ public class AGVCar implements Car{
 
     @Override
     public void setState(State state) {
-        this.state = state;
-        sendStateToSystem(AGVNum, this.state.getValue());
+        if (!this.state.equals(state)) {
+            this.state = state;
+            sendStateToSystem(AGVNum, this.state.getValue());
+        }
     }
 
     @Override

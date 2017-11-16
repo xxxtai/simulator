@@ -41,15 +41,14 @@ public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
         String msg = (String) message;
         log.info(msg);
 
-        if (msg != null && msg.length() > 0) {
-            this.car.setLastCommunicationTime(System.currentTimeMillis());
-            if (msg.startsWith(Constant.ROUTE_PREFIX)) {
+        String[] contents = msg.split(Constant.SUFFIX);
+        for (String content : contents) {
+            if (content.startsWith(Constant.ROUTE_PREFIX)) {
                 log.info(this.car.getAGVNum() + "AGV route:" + msg);
-                ((AGVCar) car).setCardCommandMap(Constant.getContent(msg));
+                ((AGVCar) car).setCardCommandMap(content.substring(Constant.FIX_LENGTH, content.length()));
             }
-            if (msg.endsWith(Constant.SUFFIX) && msg.startsWith(Constant.COMMAND_PREFIX)) {
-                String content = Constant.getContent(msg);
-                String[] c = content.split(Constant.SPLIT);
+            if (content.startsWith(Constant.COMMAND_PREFIX)) {
+                String[] c = content.substring(Constant.FIX_LENGTH, content.length()).split(Constant.SPLIT);
                 if (Integer.valueOf(c[0], 16) == 1) {
                     this.car.setState(State.FORWARD);
                     log.info("让" + this.car.getAGVNum() + "AGV前进");
