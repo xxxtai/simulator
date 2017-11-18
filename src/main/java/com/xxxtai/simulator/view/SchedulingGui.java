@@ -158,7 +158,7 @@ public class SchedulingGui extends JPanel {
                 }
                 if (detected && car1.getState().equals(State.FORWARD)) {
                     car1.setState(State.INFRARED_ANOMALY);
-                    stateLabel.setText(car1.getAGVNum() + "AGV红外异常");
+//                    stateLabel.setText(car1.getAGVNum() + "AGV红外异常");
                 } else if (!detected && car1.getState().equals(State.INFRARED_ANOMALY)) {
                     car1.setState(State.FORWARD);
                 }

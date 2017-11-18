@@ -45,7 +45,7 @@ public class NettyClientBootstrap {
             public ChannelHandler[] handlers() {
                 return new ChannelHandler[]{
                         this,
-                        new IdleStateHandler(0, 4, 0, TimeUnit.SECONDS),
+                        new IdleStateHandler(0, 2, 0, TimeUnit.SECONDS),
                         idleStateTrigger,
                         new StringDecoder(),
                         new StringEncoder(),

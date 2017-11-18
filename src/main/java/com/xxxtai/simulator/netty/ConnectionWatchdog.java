@@ -41,8 +41,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter im
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info(this.agvNum + "AGV 当前链路已经激活了，重连尝试次数重新置为0");
-        attempts = 0;
+        log.info(this.agvNum + "AGV 当前链路已经激活了，重连尝试次数为:" + attempts);
         ctx.fireChannelActive();
     }
 
