@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j(topic = "develop")
-public class AGVCar implements Car{
+public class AGVCar implements Car {
     private @Getter
     int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
@@ -259,9 +259,9 @@ public class AGVCar implements Car{
         }
         onDuty = true;
         for (Map.Entry<Long, List<Exit>> entry : graph.getExitMap().entrySet()) {
-            for (Exit exit : entry.getValue()){
-                for (int cardNum : exit.getExitNodeNums()){
-                    if (cardNum == stopCardNum){
+            for (Exit exit : entry.getValue()) {
+                for (int cardNum : exit.getExitNodeNums()) {
+                    if (cardNum == stopCardNum) {
                         destination = City.valueOfCode(entry.getKey()).getName();
                         break;
                     }
@@ -271,15 +271,15 @@ public class AGVCar implements Car{
         for (int i = 0; i < commandArray.length - 1; i++) {
             if (Constant.USE_SERIAL) {
                 this.cardCommandMap.put(graph.getSerialNumMap().get(commandArray[i].substring(0, 8)),
-                        Integer.parseInt(commandArray[i].substring(10, 12),16));
+                        Integer.parseInt(commandArray[i].substring(10, 12), 16));
             } else {
                 String[] c = commandArray[i].split(Constant.SUB_SPLIT);
-                this.cardCommandMap.put(Integer.parseInt(c[0]), Integer.parseInt(c[1],16));
+                this.cardCommandMap.put(Integer.parseInt(c[0]), Integer.parseInt(c[1], 16));
             }
         }
     }
 
-    private void turnAround(){
+    private void turnAround() {
         if (this.orientation == Orientation.RIGHT) {
             this.orientation = Orientation.LEFT;
         } else if (this.orientation == Orientation.LEFT) {
@@ -291,7 +291,7 @@ public class AGVCar implements Car{
         }
     }
 
-    public void finishedDuty(){
+    public void finishedDuty() {
         onDuty = false;
         destination = null;
         stopCardNum = 0;
@@ -311,27 +311,27 @@ public class AGVCar implements Car{
 
     private void sendReadCardToSystem(int AGVNum, int cardNum) {
         if (Constant.USE_SERIAL) {
-            writeAndFlush(Constant.CARD_PREFIX  +  graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
+            writeAndFlush(Constant.CARD_PREFIX + graph.getCardNumMap().get(cardNum) + Constant.SUFFIX);
         } else {
-            writeAndFlush(Constant.CARD_PREFIX  +  cardNum + Constant.SUFFIX);
+            writeAndFlush(Constant.CARD_PREFIX + cardNum + Constant.SUFFIX);
         }
     }
 
-    private void sendStateToSystem(int AGVNum, int state){
+    private void sendStateToSystem(int AGVNum, int state) {
         writeAndFlush(Constant.STATE_PREFIX + Integer.toHexString(state) + Constant.SUFFIX);
     }
 
-    private void heartBeat(int AGVNum){
+    private void heartBeat(int AGVNum) {
         writeAndFlush(Constant.HEART_PREFIX + Integer.toHexString(AGVNum) + Constant.SUFFIX);
     }
 
-    private void writeAndFlush(String message){
+    private void writeAndFlush(String message) {
         if (this.socketChannel != null) {
             ChannelFuture channelFuture = null;
             try {
                 channelFuture = this.socketChannel.writeAndFlush(message).sync();
             } catch (InterruptedException e) {
-                log.info(this.getAGVNum() + "AGV writeAndFlush InterruptedException:",e);
+                log.info(this.getAGVNum() + "AGV writeAndFlush InterruptedException:", e);
             }
             if (channelFuture == null || !channelFuture.isSuccess()) {
                 log.info(this.getAGVNum() + "AGV writeAndFlush message:" + message + " failed 失败，！！！！！！！！！！！！！！！！！！！！！！！！");
@@ -339,17 +339,17 @@ public class AGVCar implements Car{
                 log.debug(this.getAGVNum() + "AGV simulator send message " + message);
             }
         } else {
-            log.info(this.getAGVNum() + "AGV socketChannel null message:" + message+ "  ！！！！！！！！！！！！！！！！！！！！！！！！！");
+            log.info(this.getAGVNum() + "AGV socketChannel null message:" + message + "  ！！！！！！！！！！！！！！！！！！！！！！！！！");
         }
     }
 
     @Override
-    public int getX(){
+    public int getX() {
         return position.x;
     }
 
     @Override
-    public int getY(){
+    public int getY() {
         return position.y;
     }
 
@@ -403,11 +403,14 @@ public class AGVCar implements Car{
     }
 
     @Override
-    public void setExecutiveCommand(Command command) {}
+    public void setExecutiveCommand(Command command) {
+    }
 
     @Override
-    public void sendMessageToAGV(String s) {}
+    public void sendMessageToAGV(String s) {
+    }
 
     @Override
-    public void setRouteNodeNumArray(List<Integer> list) {}
+    public void setRouteNodeNumArray(List<Integer> list) {
+    }
 }

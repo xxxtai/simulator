@@ -23,19 +23,20 @@ public class HeartBeatClientHandler extends ChannelInboundHandlerAdapter {
     private boolean test;
     private StringBuilder holdMessage;
 
-    public HeartBeatClientHandler(Car car){
+    public HeartBeatClientHandler(Car car) {
         this.car = car;
         holdMessage = new StringBuilder();
     }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info(car.getAGVNum() + "AGV channel激活时间是："+new Date());
+        log.info(car.getAGVNum() + "AGV channel激活时间是：" + new Date());
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info(car.getAGVNum() + "AGV channel停止时间是："+new Date());
+        log.info(car.getAGVNum() + "AGV channel停止时间是：" + new Date());
     }
 
 

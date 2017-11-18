@@ -25,27 +25,16 @@ import java.util.Map;
 @Component
 public class SchedulingGui extends JPanel {
     private static final long serialVersionUID = 1L;
-
     private int safeDistance;
-
     private JLabel stateLabel;
-
-    private Timer heartBeat;
-
     private boolean stopAGVS;
-
     private boolean showNums = true;
-
     private int entranceBorder1;
-
     private int entranceBorder2;
-
     @Resource
     private DrawingGraph drawingGraph;
-
     @Resource
     private Graph graph;
-
     private List<Car> AGVArray;
 
     private SchedulingGui() {
@@ -85,7 +74,7 @@ public class SchedulingGui extends JPanel {
     }
 
     public void init(ApplicationContext context) {
-        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x)/2 - 20;
+        this.safeDistance = (graph.getNodeMap().get(2).x - graph.getNodeMap().get(1).x) / 2 - 20;
         log.info("safeDistance:" + safeDistance);
         if (!graph.getEntranceMap().isEmpty()) {
             Edge edge = graph.getEdgeMap().get(graph.getEntranceMap().keySet().iterator().next());
@@ -101,7 +90,7 @@ public class SchedulingGui extends JPanel {
             AGVArray.add(context.getBean(AGVCar.class));
             AGVArray.get(AGVArray.size() - 1).init(entry.getKey(), entry.getValue());
         }
-        heartBeat = new Timer(50, new RepaintTimerListener());
+        Timer heartBeat = new Timer(50, new RepaintTimerListener());
         heartBeat.start();
         new Timer(100, new DetectCollideTimerListener()).start();
     }
@@ -162,7 +151,7 @@ public class SchedulingGui extends JPanel {
                     if (Math.abs(car1.getX() - car2.getX()) < safeDistance) {
                         if (car1.getOrientation().equals(Orientation.RIGHT) && car1.getX() < car2.getX()) {
                             detected = true;
-                        } else if(car1.getOrientation().equals(Orientation.LEFT) && car1.getX() > car2.getX()){
+                        } else if (car1.getOrientation().equals(Orientation.LEFT) && car1.getX() > car2.getX()) {
                             detected = true;
                         }
                     }
@@ -170,7 +159,7 @@ public class SchedulingGui extends JPanel {
                 if (detected && car1.getState().equals(State.FORWARD)) {
                     car1.setState(State.INFRARED_ANOMALY);
                     stateLabel.setText(car1.getAGVNum() + "AGV红外异常");
-                } else if (!detected && car1.getState().equals(State.INFRARED_ANOMALY)){
+                } else if (!detected && car1.getState().equals(State.INFRARED_ANOMALY)) {
                     car1.setState(State.FORWARD);
                 }
             }

@@ -11,7 +11,7 @@ import io.netty.util.CharsetUtil;
 
 @Sharable
 public class ConnectorIdleStateTrigger extends ChannelInboundHandlerAdapter {
-    
+
     private static final ByteBuf HEARTBEAT_SEQUENCE = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Heartbeat",
             CharsetUtil.UTF_8));
 

@@ -28,6 +28,7 @@ public class NettyClientBootstrap {
     private String host;
     private Car car;
     private SocketChannel socketChannel;
+
     public NettyClientBootstrap(int port, String host, Car car) throws InterruptedException {
         this.port = port;
         this.host = host;
@@ -39,10 +40,10 @@ public class NettyClientBootstrap {
         boot = new Bootstrap();
         boot.group(group).channel(NioSocketChannel.class).handler(new LoggingHandler(LogLevel.INFO));
 
-        final ConnectionWatchdog watchdog = new ConnectionWatchdog(boot, timer, port,host, car.getAGVNum(),true) {
+        final ConnectionWatchdog watchdog = new ConnectionWatchdog(boot, timer, port, host, car.getAGVNum(), true) {
 
             public ChannelHandler[] handlers() {
-                return new ChannelHandler[] {
+                return new ChannelHandler[]{
                         this,
                         new IdleStateHandler(0, 4, 0, TimeUnit.SECONDS),
                         idleStateTrigger,
@@ -64,12 +65,12 @@ public class NettyClientBootstrap {
                         ch.pipeline().addLast(watchdog.handlers());
                     }
                 });
-                future = boot.connect(host,port);
+                future = boot.connect(host, port);
             }
             // 以下代码在synchronized同步块外面是安全的
             future.sync();
             if (future.isSuccess()) {
-                socketChannel = (SocketChannel)future.channel();
+                socketChannel = (SocketChannel) future.channel();
                 log.info(car.getAGVNum() + "AGV connect server  成功---------");
             }
             return socketChannel;
