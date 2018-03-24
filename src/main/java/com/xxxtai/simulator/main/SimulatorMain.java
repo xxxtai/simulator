@@ -21,14 +21,9 @@ public class SimulatorMain extends JFrame {
     private static final long serialVersionUID = 1L;
     @Resource
     private SchedulingGui schedulingGui;
-    @Resource
-    private SettingGui settingGui;
-    @Resource
-    private DrawingGui graphingGui;
 
     public SimulatorMain() {
         super("模拟多AGV场景");
-
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setExtendedState(Frame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -43,16 +38,11 @@ public class SimulatorMain extends JFrame {
     }
 
     private void init(ApplicationContext context) {
-        graphingGui.getGuiInstance(SimulatorMain.this, schedulingGui, settingGui);
-        settingGui.getGuiInstance(SimulatorMain.this, schedulingGui, graphingGui);
-        schedulingGui.getGuiInstance(SimulatorMain.this, settingGui, graphingGui);
         schedulingGui.init(context);
-
         this.getContentPane().add(schedulingGui);
         this.repaint();
         this.validate();
     }
-
 
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("/META-INF/spring/beans.xml");
