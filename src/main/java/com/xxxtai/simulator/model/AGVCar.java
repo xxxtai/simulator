@@ -22,6 +22,7 @@ import java.util.Map;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j(topic = "develop")
 public class AGVCar implements Car {
+    private final int DETEC_PIX = 9;
     private @Getter
     int AGVNum;
     private Orientation orientation = Orientation.RIGHT;
@@ -84,7 +85,7 @@ public class AGVCar implements Car {
     public void stepByStep() {
         if (!finishEdge && (state == State.FORWARD || state == State.BACKWARD)
                 && this.atEdge != null) {
-            int FORWARD_PIx = 3;
+            int FORWARD_PIx = 6;
             if (this.atEdge.startNode.x == this.atEdge.endNode.x) {
                 if (this.atEdge.startNode.y < this.atEdge.endNode.y) {
                     if (this.position.y < this.atEdge.endNode.y) {
@@ -232,13 +233,13 @@ public class AGVCar implements Car {
 
     private int detectRFIDCard() {
         int foundCard = 0;
-        if (Math.abs(this.position.x - this.atEdge.CARD_POSITION.x) < 4 && Math.abs(this.position.y - this.atEdge.CARD_POSITION.y) < 4)
+        if (Math.abs(this.position.x - this.atEdge.CARD_POSITION.x) < DETEC_PIX && Math.abs(this.position.y - this.atEdge.CARD_POSITION.y) < DETEC_PIX)
             foundCard = this.atEdge.cardNum;
 
-        if (Math.abs(this.position.x - this.atEdge.startNode.x) < 4 && Math.abs(this.position.y - this.atEdge.startNode.y) < 4)
+        if (Math.abs(this.position.x - this.atEdge.startNode.x) < DETEC_PIX && Math.abs(this.position.y - this.atEdge.startNode.y) < DETEC_PIX)
             foundCard = this.atEdge.startNode.cardNum;
 
-        if (Math.abs(this.position.x - this.atEdge.endNode.x) < 4 && Math.abs(this.position.y - this.atEdge.endNode.y) < 4)
+        if (Math.abs(this.position.x - this.atEdge.endNode.x) < DETEC_PIX && Math.abs(this.position.y - this.atEdge.endNode.y) < DETEC_PIX)
             foundCard = this.atEdge.endNode.cardNum;
 
         return foundCard;
